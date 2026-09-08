@@ -23,12 +23,14 @@ import { LoadingState, ErrorState } from "../components/ui/LoadingState";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { WelcomeIntroBanner } from "../components/ui/WelcomeIntroBanner";
+import DedicatedStudentList from "../components/DedicatedStudentList";
 
 export default function MentorDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
+  const [showDedicatedList, setShowDedicatedList] = useState(false);
 
   useEffect(() => {
     api
@@ -44,45 +46,49 @@ export default function MentorDashboard() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
-      <WelcomeIntroBanner />
+      {showDedicatedList ? (
+        <DedicatedStudentList onClose={() => setShowDedicatedList(false)} title="My Assigned Class & Mentee Directory" />
+      ) : (
+        <>
+          <WelcomeIntroBanner />
 
-      {/* Top Banner / Hero Greeting */}
-      <div className="p-6 md:p-7 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-xs relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-slate-800 text-slate-300 border border-slate-700">
-                <Sparkles size={11} className="text-purple-400" /> Faculty Advisory Core
-              </span>
-              <span className="text-xs text-slate-400 font-medium">Academic Term 2025–26</span>
+          {/* Top Banner / Hero Greeting */}
+          <div className="p-6 md:p-7 rounded-2xl bg-sky-50 text-blue-950 border border-blue-100/80 shadow-xs relative overflow-hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                    <Sparkles size={11} className="text-blue-500" /> Faculty Advisory Core
+                  </span>
+                  <span className="text-xs text-blue-800/80 font-medium">Academic Term 2025–26</span>
+                </div>
+                <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-blue-950">
+                  Welcome back, {user?.email ? user.email.split("@")[0] : "Advisor"}
+                </h1>
+                <p className="text-xs md:text-sm text-slate-600 max-w-xl font-normal leading-relaxed">
+                  Managing <span className="font-semibold text-blue-900">{cards.totalStudents} assigned mentees</span>.{" "}
+                  {priorityStudents.length > 0
+                    ? `${priorityStudents.length} students require mentoring follow-ups.`
+                    : "All mentees are currently within safe academic thresholds."}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  onClick={() => setShowDedicatedList(true)}
+                  className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3.5 rounded-xl transition-colors shadow-xs cursor-pointer"
+                >
+                  <Users size={14} /> QuickView Workspace List
+                </button>
+                <button
+                  onClick={() => navigate("/meetings")}
+                  className="inline-flex items-center gap-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 text-xs font-medium py-2 px-3.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  <Plus size={14} /> Record Session
+                </button>
+              </div>
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-              Welcome back, {user?.email ? user.email.split("@")[0] : "Advisor"}
-            </h1>
-            <p className="text-xs md:text-sm text-slate-300 max-w-xl font-normal leading-relaxed">
-              Managing <span className="font-semibold text-white">{cards.totalStudents} assigned mentees</span>.{" "}
-              {priorityStudents.length > 0
-                ? `${priorityStudents.length} students require mentoring follow-ups.`
-                : "All mentees are currently within safe academic thresholds."}
-            </p>
           </div>
-
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              onClick={() => navigate("/meetings")}
-              className="btn-primary text-xs py-2 px-3.5"
-            >
-              <Plus size={14} /> Record Session
-            </button>
-            <button
-              onClick={() => navigate("/students")}
-              className="inline-flex items-center gap-1.5 bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 text-xs font-medium py-2 px-3.5 rounded-xl transition-colors"
-            >
-              <Users size={14} /> Mentee Directory
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Cohort KPIs & Performance Telemetry - Compact 1-line (xl) / 2-line (sm) grid */}
       <div>
@@ -117,7 +123,7 @@ export default function MentorDashboard() {
             compact
           />
           <StatCard
-            label="Low Att. (<75%)"
+            label="Att. below 85%"
             value={cards.lowAttendance}
             icon={<TrendingDown size={14} />}
             accent={cards.lowAttendance > 0 ? "risk-high" : "risk-low"}
@@ -206,7 +212,7 @@ export default function MentorDashboard() {
           </div>
           <Link
             to="/students"
-            className="text-xs font-medium text-slate-600 hover:text-purple-600 inline-flex items-center gap-1 shrink-0"
+            className="text-xs font-medium text-slate-600 hover:text-blue-600 inline-flex items-center gap-1 shrink-0"
           >
             <span>View all {cards.totalStudents} students</span>
             <ChevronRight size={14} />
@@ -233,7 +239,7 @@ export default function MentorDashboard() {
                   <div className="min-w-0">
                     <Link
                       to={`/students/${s.id}`}
-                      className="text-sm font-semibold text-navy hover:text-purple-600 truncate block transition-colors"
+                      className="text-sm font-semibold text-navy hover:text-blue-600 truncate block transition-colors"
                     >
                       {s.name}
                     </Link>
@@ -262,6 +268,8 @@ export default function MentorDashboard() {
           )}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

@@ -19,21 +19,40 @@ export async function getStudentReport(user: JwtPayload, studentId: string) {
 
   if (user.role === "MENTOR") {
     const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
-    if (!mentor || mentor.id !== student.mentorId) throw ApiError.forbidden();
+    if (!mentor || mentor.id !== student.mentorId) throw ApiError.forbidden("Access denied: Student is not your assigned mentee.");
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod || hod.departmentId !== student.departmentId) {
+      throw ApiError.forbidden("Access denied: Student is not in your authorized department.");
+    }
   }
 
-  const visibleIssues = student.issues.filter((i: any) => {
-    if (!i.isRestricted) return true;
-    return user.role === "HOD" || user.role === "MENTOR";
-  });
-
-  return { ...student, issues: visibleIssues };
+  return student;
 }
+
 
 export async function getMentorReport(user: JwtPayload, mentorId: string) {
   if (user.role === "MENTOR") {
     const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
-    if (!mentor || mentor.id !== mentorId) throw ApiError.forbidden();
+    if (!mentor || mentor.id !== mentorId) throw ApiError.forbidden("Access denied: You can only view your own mentor report.");
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden("Access denied: HOD profile not found.");
+    
+    // Check if targetMentor is in HOD's dept OR mentors a student in HOD's dept
+    const targetMentor = await prisma.mentor.findFirst({
+      where: {
+        id: mentorId,
+        OR: [
+          { departmentId: hod.departmentId },
+          { students: { some: { departmentId: hod.departmentId } } }
+        ]
+      }
+    });
+    
+    if (!targetMentor) {
+      throw ApiError.forbidden("Access denied: This faculty member does not belong to or teach in your authorized department.");
+    }
   }
 
   const mentor = await prisma.mentor.findUnique({ where: { id: mentorId }, include: { department: true } });
@@ -42,26 +61,21 @@ export async function getMentorReport(user: JwtPayload, mentorId: string) {
   const students = await prisma.student.findMany({ where: { mentorId } });
   const studentIds = students.map((s) => s.id);
 
-  const [meetings, actions, risks] = await Promise.all([
-    prisma.meeting.count({ where: { mentorId } }),
-    prisma.actionItem.groupBy({ by: ["status"], where: { mentorId }, _count: { status: true } }),
-    prisma.riskAssessment.findMany({ where: { studentId: { in: studentIds } }, orderBy: { createdAt: "desc" } }),
+  const [meetings, issues, actions] = await Promise.all([
+    prisma.meeting.findMany({ where: { mentorId }, include: { student: { select: { fullName: true } } }, orderBy: { meetingDate: "desc" }, take: 10 }),
+    prisma.studentIssue.findMany({ where: { mentorId }, include: { student: { select: { fullName: true } } }, orderBy: { createdAt: "desc" }, take: 10 }),
+    prisma.actionItem.findMany({ where: { mentorId }, include: { student: { select: { fullName: true } } }, orderBy: { targetCompletionDate: "asc" }, take: 10 }),
   ]);
 
-  const latestByStudent = new Map<string, string>();
-  for (const r of risks) if (!latestByStudent.has(r.studentId)) latestByStudent.set(r.studentId, r.riskLevel);
-  const highRisk = [...latestByStudent.values()].filter((l) => l === "HIGH" || l === "CRITICAL").length;
-
-  const actionMap = Object.fromEntries(actions.map((a) => [a.status, a._count.status]));
-
   return {
-    mentor,
-    totalStudents: students.length,
-    meetings,
-    highRiskStudents: highRisk,
-    pendingFollowUps: students.length ? await prisma.meeting.count({ where: { mentorId, nextFollowUpDate: { gte: new Date() } } }) : 0,
-    completedActions: actionMap["COMPLETED"] ?? 0,
-    pendingActions: (actionMap["PENDING"] ?? 0) + (actionMap["IN_PROGRESS"] ?? 0),
+    ...mentor,
+    stats: {
+      totalMentees: students.length,
+      meetingsLogged: await prisma.meeting.count({ where: { mentorId } }),
+      activeIssues: await prisma.studentIssue.count({ where: { mentorId, status: { in: ["OPEN", "IN_PROGRESS"] } } }),
+      pendingActions: await prisma.actionItem.count({ where: { mentorId, status: { in: ["PENDING", "OVERDUE"] } } }),
+    },
+    recentActivity: { meetings, issues, actions },
   };
 }
 
@@ -70,10 +84,34 @@ export async function getMonthlyReport(user: JwtPayload, month: number, year: nu
   const end = new Date(year, month, 1);
 
   const where: Record<string, unknown> = { meetingDate: { gte: start, lt: end } };
+  let hodDeptId: string | undefined;
+  
   if (user.role === "MENTOR") {
     const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
-    if (!mentor) throw ApiError.forbidden();
+    if (!mentor) throw ApiError.forbidden("No mentor profile found");
     where.mentorId = mentor.id;
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden("No HOD profile found");
+    hodDeptId = hod.departmentId;
+    
+    if (mentorId) {
+      const targetMentor = await prisma.mentor.findFirst({
+        where: {
+          id: mentorId,
+          OR: [
+            { departmentId: hod.departmentId },
+            { students: { some: { departmentId: hod.departmentId } } }
+          ]
+        }
+      });
+      if (!targetMentor) {
+        throw ApiError.forbidden("Access denied: This faculty member does not belong to or teach in your authorized department.");
+      }
+      where.mentorId = mentorId;
+    } else {
+      where.student = { departmentId: hod.departmentId };
+    }
   } else if (mentorId) {
     where.mentorId = mentorId;
   }
@@ -82,13 +120,18 @@ export async function getMonthlyReport(user: JwtPayload, month: number, year: nu
   const studentsSet = new Set(meetings.map((m) => m.studentId));
 
   const issueWhere: Record<string, unknown> = { createdAt: { gte: start, lt: end } };
-  if (where.mentorId) issueWhere.mentorId = where.mentorId;
+  if (where.mentorId) {
+    issueWhere.mentorId = where.mentorId;
+  } else if (hodDeptId) {
+    issueWhere.student = { departmentId: hodDeptId };
+  }
+
   const [issuesCreated, issuesResolved, actionsAssigned, actionsCompleted, followUpsCompleted] = await Promise.all([
     prisma.studentIssue.count({ where: issueWhere }),
     prisma.studentIssue.count({ where: { ...issueWhere, resolvedDate: { gte: start, lt: end } } }),
-    prisma.actionItem.count({ where: { createdAt: { gte: start, lt: end }, ...(where.mentorId ? { mentorId: where.mentorId } : {}) } }),
-    prisma.actionItem.count({ where: { completedDate: { gte: start, lt: end }, ...(where.mentorId ? { mentorId: where.mentorId } : {}) } }),
-    prisma.meeting.count({ where: { nextFollowUpDate: { gte: start, lt: end } } }),
+    prisma.actionItem.count({ where: { createdAt: { gte: start, lt: end }, ...(where.mentorId ? { mentorId: where.mentorId } : (hodDeptId ? { student: { departmentId: hodDeptId } } : {})) } }),
+    prisma.actionItem.count({ where: { completedDate: { gte: start, lt: end }, ...(where.mentorId ? { mentorId: where.mentorId } : (hodDeptId ? { student: { departmentId: hodDeptId } } : {})) } }),
+    prisma.meeting.count({ where: { nextFollowUpDate: { gte: start, lt: end }, ...(where.mentorId ? { mentorId: where.mentorId } : (hodDeptId ? { student: { departmentId: hodDeptId } } : {})) } }),
   ]);
 
   const risks = await prisma.riskAssessment.findMany({
@@ -121,9 +164,13 @@ export async function getSemesterReport(user: JwtPayload, startDate: string, end
     const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
     if (!mentor) throw ApiError.forbidden();
     where.mentorId = mentor.id;
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden();
+    where.departmentId = hod.departmentId;
   }
 
-  const students = await prisma.student.findMany({ where: where.mentorId ? { mentorId: where.mentorId } : {} });
+  const students = await prisma.student.findMany({ where });
   const studentIds = students.map((s) => s.id);
 
   const [meetings, issuesTotal, issuesResolved, risks] = await Promise.all([
@@ -167,6 +214,10 @@ export async function getIssueAnalysisReport(user: JwtPayload) {
     const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
     if (!mentor) throw ApiError.forbidden();
     where.mentorId = mentor.id;
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden();
+    where.student = { departmentId: hod.departmentId };
   }
 
   const [byCategory, bySeverity, byStatus, total] = await Promise.all([
@@ -198,6 +249,10 @@ export async function getActionCompletionReport(user: JwtPayload) {
     const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
     if (!mentor) throw ApiError.forbidden();
     where.mentorId = mentor.id;
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden();
+    where.student = { departmentId: hod.departmentId };
   }
 
   const grouped = await prisma.actionItem.groupBy({ by: ["status"], where, _count: { status: true } });

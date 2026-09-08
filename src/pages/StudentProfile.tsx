@@ -23,6 +23,7 @@ import { Badge } from "../components/ui/Badge";
 import { Student } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { BackButton } from "../components/ui/BackButton";
+import { StudentFeeSection } from "../components/StudentFeeSection";
 
 const SEVERITY_TONE: Record<string, "neutral" | "success" | "warning" | "danger" | "info"> = {
   LOW: "info",
@@ -44,7 +45,7 @@ const STATUS_TONE: Record<string, "neutral" | "success" | "warning" | "danger" |
 export default function StudentProfile() {
   const { id } = useParams();
   const { user } = useAuth();
-  const [student, setStudent] = useState<Student | null>(null);
+  const [student, setStudent] = useState<any | null>(null);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"meetings" | "issues" | "actions" | "risk">("meetings");
 
@@ -77,7 +78,7 @@ export default function StudentProfile() {
       {/* Main Student Header Card */}
       <div className="app-card p-5 sm:p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-slate-200 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start gap-4">
-          <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-purple-50 text-purple-700 font-display text-2xl font-bold flex items-center justify-center border border-purple-100 shadow-xs shrink-0">
+          <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-blue-50 text-blue-700 font-display text-2xl font-bold flex items-center justify-center border border-blue-100 shadow-xs shrink-0">
             {student.fullName[0]}
           </div>
 
@@ -86,8 +87,17 @@ export default function StudentProfile() {
               <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">
                 {student.fullName}
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                {student.registerNumber}
+              {student.rollNumber ? (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200" title="Roll Number">
+                  Roll: {student.rollNumber}
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono text-slate-400 bg-slate-50 border border-slate-200">
+                  Roll: Unassigned
+                </span>
+              )}
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-800 border border-slate-200" title="Register Number">
+                Reg: {student.registerNumber}
               </span>
             </div>
 
@@ -99,7 +109,7 @@ export default function StudentProfile() {
 
             <div className="mt-3 flex flex-wrap items-center gap-2.5 text-xs text-slate-600">
               <span className="inline-flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
-                <User size={13} className="text-purple-600" />
+                <User size={13} className="text-blue-600" />
                 <span>Mentor: <strong className="text-slate-900">{student.mentor?.fullName || "Not assigned"}</strong></span>
               </span>
               {student.email && (
@@ -143,8 +153,8 @@ export default function StudentProfile() {
         <InfoCard
           label="Attendance Rate"
           value={`${student.attendancePercentage}%`}
-          warn={student.attendancePercentage < 75}
-          subtext={student.attendancePercentage < 75 ? "Below 75% threshold" : "Compliant with regulations"}
+          warn={student.attendancePercentage < 85}
+          subtext={student.attendancePercentage < 85 ? "Below 85% threshold" : "Compliant with regulations"}
         />
         <InfoCard
           label="Academic CGPA"
@@ -182,7 +192,108 @@ export default function StudentProfile() {
           value={student.meetings?.length || 0}
           subtext="1:1 meetings logged"
         />
+        <InfoCard
+          label="Fee Status"
+          value={student.feeDetails?.feeStatusLabel || "Unavailable"}
+          warn={student.feeDetails?.feeStatus === "OVERDUE"}
+          subtext={
+            student.feeDetails?.hasFeeData
+              ? student.feeDetails?.feeStatus === "PAID"
+                ? "All dues settled"
+                : student.feeDetails?.outstandingAmount !== null && student.feeDetails?.outstandingAmount !== undefined
+                ? `Due: ₹${student.feeDetails.outstandingAmount.toLocaleString("en-IN")}`
+                : "Active fee schedule"
+              : "No fee record logged"
+          }
+        />
       </div>
+
+      {/* Academic & Professional Profiling Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Academic Details */}
+        <div className="app-card p-5 sm:p-6 space-y-4">
+          <div className="border-b border-blue-50 pb-2.5">
+            <h3 className="font-display font-bold text-slate-900 text-sm">Academic Standings</h3>
+            <p className="text-[10px] text-slate-500">Official university registration parameters</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 text-xs">
+            <div>
+              <p className="text-slate-400 font-medium">Roll Number</p>
+              <p className="text-blue-700 font-mono font-bold mt-0.5">{student.rollNumber || "Not assigned"}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 font-medium">Register Number</p>
+              <p className="text-slate-800 font-mono font-bold mt-0.5">{student.registerNumber}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 font-medium">Semester</p>
+              <p className="text-slate-800 font-bold mt-0.5">Semester {student.semester || "N/A"}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 font-medium">Admission Year</p>
+              <p className="text-slate-800 font-bold mt-0.5">{student.admissionYear || "N/A"}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 font-medium">Admission ID</p>
+              <p className="text-slate-800 font-mono font-bold mt-0.5">{student.admissionNumber || "N/A"}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 font-medium">Branch Section</p>
+              <p className="text-slate-800 font-bold mt-0.5">Year {student.year} - Sec {student.section}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Career & Skills Info */}
+        <div className="app-card p-5 sm:p-6 space-y-4">
+          <div className="border-b border-blue-50 pb-2.5">
+            <h3 className="font-display font-bold text-slate-900 text-sm">Career & Professional Readiness</h3>
+            <p className="text-[10px] text-slate-500">Skills, aspirations, and industrial profiling</p>
+          </div>
+          <div className="space-y-3.5 text-xs">
+            <div>
+              <p className="text-slate-400 font-medium">Career Aspiration</p>
+              <p className="text-slate-800 font-semibold mt-0.5">{student.careerGoal || "Not specified"}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 font-medium">Target Industry Role</p>
+              <p className="text-slate-800 font-semibold mt-0.5">{student.targetRole || "Not specified"}</p>
+            </div>
+            {student.skills && student.skills.length > 0 && (
+              <div>
+                <p className="text-slate-400 font-medium mb-1">Core Tech Stack & Skills</p>
+                <div className="flex flex-wrap gap-1">
+                  {student.skills.map((s: string, idx: number) => (
+                    <span key={idx} className="bg-sky-50 text-blue-700 px-2 py-0.5 rounded text-[10px] font-medium border border-blue-100">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {student.certifications && student.certifications.length > 0 && (
+              <div>
+                <p className="text-slate-400 font-medium mb-1">Earned Certifications</p>
+                <div className="flex flex-wrap gap-1">
+                  {student.certifications.map((c: string, idx: number) => (
+                    <span key={idx} className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-medium border border-emerald-100">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Real-time Student Fee Details & Status Section */}
+      <StudentFeeSection
+        studentId={student.id}
+        feeDetails={student.feeDetails}
+        userRole={user?.role}
+        onFeeUpdated={load}
+      />
 
       {/* Interactive Tabbed Detail History */}
       <div className="app-card overflow-hidden">
@@ -198,7 +309,7 @@ export default function StudentProfile() {
               onClick={() => setTab(t.id as any)}
               className={`px-4 py-3 text-xs md:text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                 tab === t.id
-                  ? "border-brand-600 text-brand-700 bg-white shadow-xs rounded-t-lg"
+                  ? "border-blue-600 text-blue-700 bg-white shadow-xs rounded-t-lg"
                   : "border-transparent text-slate-muted hover:text-navy hover:bg-white/50"
               }`}
             >
@@ -206,7 +317,7 @@ export default function StudentProfile() {
               {typeof t.count === "number" && (
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    tab === t.id ? "bg-brand-100 text-brand-800" : "bg-slate-200 text-slate-600"
+                    tab === t.id ? "bg-blue-100 text-blue-800" : "bg-slate-200 text-slate-600"
                   }`}
                 >
                   {t.count}
@@ -226,14 +337,14 @@ export default function StudentProfile() {
                   hint="Schedule a 1:1 meeting with this mentee to document progress and concerns."
                 />
               ) : (
-                student.meetings?.map((m) => (
+                student.meetings?.map((m: any) => (
                   <div
                     key={m.id}
-                    className="border border-line rounded-xl p-5 hover:border-brand-200 transition-colors bg-white space-y-3"
+                    className="border border-line rounded-xl p-5 hover:border-blue-200 transition-colors bg-white space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
                       <div className="flex items-center gap-2">
-                        <Calendar size={15} className="text-brand-600" />
+                        <Calendar size={15} className="text-blue-600" />
                         <span className="font-display font-bold text-navy text-sm">
                           {new Date(m.meetingDate).toLocaleDateString(undefined, {
                             dateStyle: "full",
@@ -271,7 +382,7 @@ export default function StudentProfile() {
                           Identified Key Points
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          {m.aiKeyConcerns.map((c, i) => (
+                          {m.aiKeyConcerns.map((c: any, i: any) => (
                             <Badge key={i} tone="warning">
                               {c}
                             </Badge>
@@ -295,7 +406,7 @@ export default function StudentProfile() {
                   icon={<FileCheck size={32} className="text-emerald-500" />}
                 />
               ) : (
-                student.issues?.map((i) => (
+                student.issues?.map((i: any) => (
                   <div
                     key={i.id}
                     className="border border-line rounded-xl p-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4 bg-white"
@@ -330,7 +441,7 @@ export default function StudentProfile() {
                   hint="Create actionable follow-up commitments from your mentoring sessions."
                 />
               ) : (
-                student.actionItems?.map((a) => (
+                student.actionItems?.map((a: any) => (
                   <div
                     key={a.id}
                     className="border border-line rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white"
@@ -358,7 +469,7 @@ export default function StudentProfile() {
                   hint="AI risk seals are automatically computed when sessions and grades are submitted."
                 />
               ) : (
-                student.riskAssessments?.map((r) => (
+                student.riskAssessments?.map((r: any) => (
                   <div
                     key={r.id}
                     className="border border-line rounded-xl p-5 bg-white space-y-4 shadow-xs"
@@ -380,7 +491,7 @@ export default function StudentProfile() {
                         Weighted Factor Breakdown
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {r.breakdown?.map((b, idx) => (
+                        {r.breakdown?.map((b: any, idx: any) => (
                           <div
                             key={idx}
                             className="flex items-center justify-between text-xs bg-surface/70 border border-line rounded-lg px-3 py-2"

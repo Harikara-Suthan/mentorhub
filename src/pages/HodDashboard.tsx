@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ShieldCheck,
   Sparkles,
+  CreditCard,
 } from "lucide-react";
 import { api, apiErrorMessage } from "../api/client";
 import { StatCard } from "../components/ui/StatCard";
@@ -23,15 +24,21 @@ import { BarDistributionChart } from "../components/charts/BarDistributionChart"
 import { RiskDot } from "../components/ui/RiskSeal";
 import { LoadingState, ErrorState } from "../components/ui/LoadingState";
 import { Department, Mentor } from "../types";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { WelcomeIntroBanner } from "../components/ui/WelcomeIntroBanner";
+import DedicatedStudentList from "../components/DedicatedStudentList";
+import FacultyTab from "../components/FacultyTab";
+import AssignmentsTab from "../components/AssignmentsTab";
 
 export default function HodDashboard() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab");
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [showDedicatedList, setShowDedicatedList] = useState(false);
   const [filters, setFilters] = useState({
     departmentId: "",
     year: "",
@@ -65,43 +72,18 @@ export default function HodDashboard() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
-      <WelcomeIntroBanner />
+      {showDedicatedList ? (
+        <DedicatedStudentList onClose={() => setShowDedicatedList(false)} title="Department-Wide Student Directory" />
+      ) : tab === "faculty" ? (
+        <FacultyTab mentors={mentors} charts={charts} />
+      ) : tab === "assignments" ? (
+        <AssignmentsTab mentors={mentors} />
+      ) : (
+        <>
+          <WelcomeIntroBanner />
 
-      {/* Top Banner / Executive Overview */}
-      <div className="p-6 md:p-7 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-xs relative overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-slate-800 text-slate-300 border border-slate-700">
-                <Sparkles size={11} className="text-purple-400" /> Institutional Governance
-              </span>
-              <span className="text-xs text-slate-400 font-medium">Department Analytics Core</span>
-            </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-              Institutional Mentoring Overview
-            </h1>
-            <p className="text-xs md:text-sm text-slate-300 max-w-xl font-normal leading-relaxed">
-              Real-time tracking of <span className="font-semibold text-white">{cards.totalStudents} students</span> across{" "}
-              <span className="font-semibold text-slate-200">{cards.totalMentors} faculty advisors</span>.
-            </p>
-          </div>
+          {/* Quick Actions (moved from top banner if necessary, or completely removed) */}
 
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              onClick={() => navigate("/reports")}
-              className="btn-primary text-xs py-2 px-3.5"
-            >
-              Generate NAAC Report
-            </button>
-            <button
-              onClick={() => navigate("/issues")}
-              className="inline-flex items-center gap-1.5 bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 text-xs font-medium py-2 px-3.5 rounded-xl transition-colors"
-            >
-              Review Escalations
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Filter Toolbar */}
       <div className="app-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -119,7 +101,7 @@ export default function HodDashboard() {
           <select
             value={filters.departmentId}
             onChange={(e) => setFilters((f) => ({ ...f, departmentId: e.target.value }))}
-            className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-medium focus:outline-none focus:border-purple-600 focus:bg-white transition-colors"
+            className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
           >
             <option value="">All Departments</option>
             {departments.map((d) => (
@@ -132,7 +114,7 @@ export default function HodDashboard() {
           <select
             value={filters.year}
             onChange={(e) => setFilters((f) => ({ ...f, year: e.target.value }))}
-            className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-medium focus:outline-none focus:border-purple-600 focus:bg-white transition-colors"
+            className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
           >
             <option value="">All Academic Years</option>
             {["I", "II", "III", "IV"].map((y) => (
@@ -145,7 +127,7 @@ export default function HodDashboard() {
           <select
             value={filters.mentorId}
             onChange={(e) => setFilters((f) => ({ ...f, mentorId: e.target.value }))}
-            className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-medium focus:outline-none focus:border-purple-600 focus:bg-white transition-colors"
+            className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
           >
             <option value="">All Faculty Mentors</option>
             {mentors.map((m) => (
@@ -181,6 +163,7 @@ export default function HodDashboard() {
           value={cards.totalMentors}
           icon={<UserCog size={14} />}
           accent="navy"
+          onClick={() => navigate("/faculty")}
           compact
         />
         <StatCard
@@ -188,6 +171,7 @@ export default function HodDashboard() {
           value={cards.meetingsCompleted}
           icon={<CalendarCheck size={14} />}
           accent="navy"
+          onClick={() => navigate("/mentoring")}
           compact
         />
         <StatCard
@@ -195,7 +179,7 @@ export default function HodDashboard() {
           value={cards.pendingFollowUps}
           icon={<Clock size={14} />}
           accent={cards.pendingFollowUps > 0 ? "risk-high" : "navy"}
-          onClick={() => navigate("/actions")}
+          onClick={() => navigate("/tasks")}
           compact
         />
         <StatCard
@@ -203,6 +187,7 @@ export default function HodDashboard() {
           value={cards.highRiskStudents}
           icon={<AlertTriangle size={14} />}
           accent={cards.highRiskStudents > 0 ? "risk-high" : "risk-low"}
+          onClick={() => navigate("/risk")}
           compact
         />
         <StatCard
@@ -210,6 +195,7 @@ export default function HodDashboard() {
           value={cards.criticalStudents}
           icon={<ShieldAlert size={14} />}
           accent={cards.criticalStudents > 0 ? "risk-high" : "risk-low"}
+          onClick={() => navigate("/risk")}
           compact
         />
         <StatCard
@@ -217,6 +203,7 @@ export default function HodDashboard() {
           value={cards.attendanceBelow85}
           icon={<TrendingDown size={14} />}
           accent={cards.attendanceBelow85 > 0 ? "risk-high" : "risk-low"}
+          onClick={() => navigate("/attendance")}
           compact
         />
         <StatCard
@@ -224,9 +211,52 @@ export default function HodDashboard() {
           value={cards.placementEligible}
           icon={<Briefcase size={14} />}
           accent="risk-low"
+          onClick={() => navigate("/career-guidance")}
           compact
         />
       </div>
+
+      {/* Fee Standing Row (When Real Fee Records Exist in Database) */}
+      {cards.totalFeeRecords > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <StatCard
+            label="Total Fees Logged"
+            value={`₹${(cards.totalFeesSum || 0).toLocaleString("en-IN")}`}
+            icon={<CreditCard size={14} />}
+            accent="navy"
+            subtext={`${cards.totalFeeRecords} student fee records`}
+            onClick={() => navigate("/students")}
+            compact
+          />
+          <StatCard
+            label="Total Collected"
+            value={`₹${(cards.amountPaidSum || 0).toLocaleString("en-IN")}`}
+            icon={<CreditCard size={14} />}
+            accent="risk-low"
+            subtext="Real verified payments"
+            onClick={() => navigate("/students")}
+            compact
+          />
+          <StatCard
+            label="Total Outstanding"
+            value={`₹${(cards.outstandingSum || 0).toLocaleString("en-IN")}`}
+            icon={<CreditCard size={14} />}
+            accent={cards.outstandingSum > 0 ? "risk-high" : "risk-low"}
+            subtext={cards.outstandingSum > 0 ? "Dues pending collection" : "All fees cleared"}
+            onClick={() => navigate("/students?tab=fees_due")}
+            compact
+          />
+          <StatCard
+            label="Overdue Students"
+            value={cards.feeOverdueCount || 0}
+            icon={<AlertTriangle size={14} />}
+            accent={cards.feeOverdueCount > 0 ? "risk-high" : "risk-low"}
+            subtext={cards.feeOverdueCount > 0 ? "Requires administrative follow-up" : "Zero overdue accounts"}
+            onClick={() => navigate("/students?tab=fees_due")}
+            compact
+          />
+        </div>
+      )}
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -296,7 +326,7 @@ export default function HodDashboard() {
           </div>
           <Link
             to="/students"
-            className="text-xs font-medium text-slate-600 hover:text-purple-600 inline-flex items-center gap-1 shrink-0"
+            className="text-xs font-medium text-slate-600 hover:text-blue-600 inline-flex items-center gap-1 shrink-0"
           >
             <span>View all students</span>
             <ChevronRight size={14} />
@@ -323,7 +353,7 @@ export default function HodDashboard() {
                   <div className="min-w-0">
                     <Link
                       to={`/students/${s.id}`}
-                      className="text-sm font-semibold text-navy hover:text-purple-600 truncate block transition-colors"
+                      className="text-sm font-semibold text-navy hover:text-blue-600 truncate block transition-colors"
                     >
                       {s.name}
                     </Link>
@@ -347,6 +377,8 @@ export default function HodDashboard() {
           )}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

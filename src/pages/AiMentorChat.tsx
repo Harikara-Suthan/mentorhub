@@ -159,7 +159,7 @@ export default function AiMentorChat() {
         <div className="px-4 sm:px-6 py-3 border-b border-slate-100 flex items-center justify-between bg-white gap-2">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <BackButton fallback="/dashboard" />
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0">
               <Bot size={18} />
             </div>
             <div className="min-w-0">
@@ -208,7 +208,7 @@ export default function AiMentorChat() {
                 className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold ${
                   m.role === "user"
                     ? "bg-slate-900 text-white"
-                    : "bg-purple-600 text-white"
+                    : "bg-blue-600 text-white"
                 }`}
               >
                 {m.role === "user" ? <User size={13} /> : <Sparkles size={13} />}
@@ -222,7 +222,7 @@ export default function AiMentorChat() {
                 <div
                   className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "bg-purple-600 text-white rounded-tr-xs shadow-xs"
+                      ? "bg-blue-600 text-white rounded-tr-xs shadow-xs"
                       : "bg-white text-slate-900 border border-slate-200/90 rounded-tl-xs shadow-xs"
                   }`}
                 >
@@ -233,7 +233,7 @@ export default function AiMentorChat() {
                   {/* Actions & Skills Metadata if returned from assistant */}
                   {m.role === "assistant" && m.suggestedActions && m.suggestedActions.length > 0 && (
                     <div className="mt-3.5 pt-3 border-t border-slate-100 space-y-1.5">
-                      <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-purple-700 flex items-center gap-1.5">
+                      <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
                         <CheckCircle2 size={13} /> Recommended Next Steps
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -241,7 +241,7 @@ export default function AiMentorChat() {
                           <button
                             key={i}
                             onClick={() => handleSend(`Tell me more about how to: ${action}`)}
-                            className="text-xs bg-slate-50 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-medium px-2 py-1 rounded-lg border border-slate-200 transition-colors text-left cursor-pointer"
+                            className="text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium px-2 py-1 rounded-lg border border-slate-200 transition-colors text-left cursor-pointer"
                           >
                             + {action}
                           </button>
@@ -272,7 +272,7 @@ export default function AiMentorChat() {
                   {m.role === "assistant" && (
                     <button
                       onClick={() => handleCopy(m.id, m.content)}
-                      className="hover:text-purple-600 p-0.5 rounded transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      className="hover:text-blue-600 p-0.5 rounded transition-colors inline-flex items-center gap-1 cursor-pointer"
                       title="Copy response"
                     >
                       {copiedId === m.id ? (
@@ -295,13 +295,13 @@ export default function AiMentorChat() {
 
           {loading && (
             <div className="flex gap-2.5 max-w-xl">
-              <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                 <Sparkles size={13} />
               </div>
               <div className="bg-white p-3 rounded-xl rounded-tl-xs border border-slate-200 shadow-xs flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-purple-600 animate-bounce" />
-                <div className="w-2 h-2 rounded-full bg-purple-600 animate-bounce [animation-delay:0.2s]" />
-                <div className="w-2 h-2 rounded-full bg-purple-600 animate-bounce [animation-delay:0.4s]" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 animate-bounce" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:0.2s]" />
+                <div className="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:0.4s]" />
                 <span className="text-xs text-slate-600 font-medium ml-1.5">Reasoning...</span>
               </div>
             </div>
@@ -322,9 +322,9 @@ export default function AiMentorChat() {
                 <button
                   key={idx}
                   onClick={() => handleSend(p.query)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-purple-50 hover:text-purple-700 text-slate-700 text-xs font-medium border border-slate-200 shrink-0 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-700 text-xs font-medium border border-slate-200 shrink-0 transition-colors cursor-pointer"
                 >
-                  <Icon size={12} className="text-purple-600" />
+                  <Icon size={12} className="text-blue-600" />
                   <span>{p.label}</span>
                 </button>
               );
@@ -335,14 +335,14 @@ export default function AiMentorChat() {
         {/* Input Bar */}
         <div className="p-2.5 sm:p-3.5 bg-white border-t border-slate-100">
           {isListening && (
-            <div className="mb-2 px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-between text-xs text-purple-900">
+            <div className="mb-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-between text-xs text-blue-900">
               <span className="flex items-center gap-2 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-ping" />
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping" />
                 Listening... (Speech to text simulated)
               </span>
               <button
                 onClick={() => setIsListening(false)}
-                className="text-[10px] font-semibold text-purple-700 uppercase hover:underline cursor-pointer"
+                className="text-[10px] font-semibold text-blue-700 uppercase hover:underline cursor-pointer"
               >
                 Cancel
               </button>
@@ -370,24 +370,24 @@ export default function AiMentorChat() {
               className={`w-8 sm:w-9 h-8 sm:h-9 rounded-lg flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
                 isListening
                   ? "bg-rose-500 text-white"
-                  : "text-slate-400 hover:text-purple-600 hover:bg-slate-100"
+                  : "text-slate-400 hover:text-blue-600 hover:bg-slate-100"
               }`}
               title="Voice Input"
             >
               {isListening ? <MicOff size={16} /> : <Mic size={16} />}
             </button>
 
-            <input
+            <input autoComplete="off"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask your mentor anything about studies, Python, career, or exams..."
-              className="flex-1 px-3 py-2 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-500/10 transition-all font-medium"
+              className="flex-1 px-3 py-2 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all font-medium"
             />
 
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs hover:bg-purple-700 active:scale-98 disabled:opacity-40 disabled:pointer-events-none transition-all shrink-0 cursor-pointer"
+              className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs hover:bg-blue-700 active:scale-98 disabled:opacity-40 disabled:pointer-events-none transition-all shrink-0 cursor-pointer"
               title="Send Message"
             >
               <Send size={14} />
@@ -401,10 +401,10 @@ export default function AiMentorChat() {
         {/* Learning Goal Card */}
         <div className="app-card p-5 space-y-3.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-purple-700 flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
               <Target size={14} /> Current Goal
             </span>
-            <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-purple-50 text-purple-700 rounded border border-purple-100">
+            <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-blue-50 text-blue-700 rounded border border-blue-100">
               Placement 2026
             </span>
           </div>
@@ -419,10 +419,10 @@ export default function AiMentorChat() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Readiness Index</span>
-              <span className="font-semibold text-purple-700">84%</span>
+              <span className="font-semibold text-blue-700">84%</span>
             </div>
             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full bg-purple-600 rounded-full w-[84%]" />
+              <div className="h-full bg-blue-600 rounded-full w-[84%]" />
             </div>
           </div>
         </div>
@@ -430,7 +430,7 @@ export default function AiMentorChat() {
         {/* Recommended Skills Matrix */}
         <div className="app-card p-5 space-y-3">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-            <Zap size={14} className="text-purple-600" /> Focus Skills
+            <Zap size={14} className="text-blue-600" /> Focus Skills
           </h4>
 
           <div className="space-y-2.5">
@@ -447,7 +447,7 @@ export default function AiMentorChat() {
                 </div>
                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-600 rounded-full"
+                    className="h-full bg-blue-600 rounded-full"
                     style={{ width: `${item.progress}%` }}
                   />
                 </div>
@@ -458,7 +458,7 @@ export default function AiMentorChat() {
 
         {/* Suggested Next Action */}
         <div className="app-card p-5 space-y-3 bg-slate-50/50">
-          <div className="flex items-center gap-1.5 text-purple-700">
+          <div className="flex items-center gap-1.5 text-blue-700">
             <BrainCircuit size={15} />
             <h4 className="text-xs font-semibold uppercase tracking-wider">Suggested Next Step</h4>
           </div>

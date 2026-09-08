@@ -18,12 +18,14 @@ import {
   Target,
   Zap,
   ShieldCheck,
+  CreditCard,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, apiErrorMessage } from "../api/client";
 import { LoadingState, ErrorState } from "../components/ui/LoadingState";
 import { useAuth } from "../context/AuthContext";
 import { StatCard } from "../components/ui/StatCard";
+import { Badge } from "../components/ui/Badge";
 import { WelcomeIntroBanner } from "../components/ui/WelcomeIntroBanner";
 
 export default function StudentDashboard() {
@@ -87,7 +89,7 @@ export default function StudentDashboard() {
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-slate-800 text-slate-300 border border-slate-700">
-                <Sparkles size={11} className="text-purple-400" /> AI Student Suite
+                <Sparkles size={11} className="text-blue-400" /> AI Student Suite
               </span>
               <span className="text-xs text-slate-400 font-medium">Academic Year 2025–26</span>
             </div>
@@ -105,7 +107,7 @@ export default function StudentDashboard() {
               <p className="font-display text-2xl font-bold text-white mt-0.5">{progressPercent}%</p>
               <div className="w-24 h-1.5 bg-slate-700 rounded-full mt-2 overflow-hidden mx-auto">
                 <div
-                  className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                  className="h-full bg-blue-500 rounded-full transition-all duration-500"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -117,7 +119,7 @@ export default function StudentDashboard() {
       {/* AI Mentor Card: "How can I help you today?" */}
       <div className="app-card p-5 sm:p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0">
             <Bot size={22} />
           </div>
           <div>
@@ -133,11 +135,11 @@ export default function StudentDashboard() {
         {/* AI Input Field & Critical Action Button */}
         <form onSubmit={handleHeroSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
           <div className="relative flex-1">
-            <input
+            <input autoComplete="off"
               value={queryInput}
               onChange={(e) => setQueryInput(e.target.value)}
               placeholder="Ask about Python algorithms, exam preparation, placement tips..."
-              className="w-full pl-4 pr-10 py-2.5 bg-slate-50 hover:bg-slate-100/60 focus:bg-white rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-500/10 transition-all font-medium"
+              className="w-full pl-4 pr-10 py-2.5 bg-slate-50 hover:bg-slate-100/60 focus:bg-white rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition-all font-medium"
             />
             <button
               type="button"
@@ -178,7 +180,7 @@ export default function StudentDashboard() {
                 setQueryInput(tag);
                 navigate(`/ai-mentor?prompt=${encodeURIComponent(tag)}`);
               }}
-              className="text-xs bg-slate-50 hover:bg-purple-50 hover:text-purple-700 text-slate-600 font-medium px-2.5 py-1 rounded-lg border border-slate-200/80 transition-colors shrink-0 cursor-pointer"
+              className="text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-600 font-medium px-2.5 py-1 rounded-lg border border-slate-200/80 transition-colors shrink-0 cursor-pointer"
             >
               {tag}
             </button>
@@ -190,7 +192,7 @@ export default function StudentDashboard() {
       <div>
         <div className="flex items-center justify-between mb-2 px-0.5">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Academic Standing</h3>
-          <Link to="/progress" className="text-xs text-purple-600 hover:text-purple-700 font-medium">
+          <Link to="/progress" className="text-xs text-blue-600 hover:text-blue-700 font-medium">
             View Analytics →
           </Link>
         </div>
@@ -239,7 +241,7 @@ export default function StudentDashboard() {
       <div>
         <div className="flex items-center justify-between mb-2 px-0.5">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Zap size={13} className="text-purple-600" /> Quick Launch
+            <Zap size={13} className="text-blue-600" /> Quick Launch
           </h3>
           <span className="text-xs text-slate-400 font-mono">4 Core Tools</span>
         </div>
@@ -247,66 +249,66 @@ export default function StudentDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
           <Link
             to="/ai-mentor"
-            className="app-card p-2.5 sm:p-3 hover:border-purple-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
+            className="app-card p-2.5 sm:p-3 hover:border-blue-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
           >
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0 group-hover:scale-105 transition-transform">
               <Bot size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate">
+              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                 AI Mentor
               </h4>
               <p className="text-[10px] text-slate-400 truncate">24/7 Academic Tutoring</p>
             </div>
-            <ArrowRight size={12} className="text-slate-300 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+            <ArrowRight size={12} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
 
           <Link
             to="/study-planner"
-            className="app-card p-2.5 sm:p-3 hover:border-purple-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
+            className="app-card p-2.5 sm:p-3 hover:border-blue-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
           >
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0 group-hover:scale-105 transition-transform">
               <Calendar size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate">
+              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                 Study Planner
               </h4>
               <p className="text-[10px] text-slate-400 truncate">Timetables & Pomodoro</p>
             </div>
-            <ArrowRight size={12} className="text-slate-300 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+            <ArrowRight size={12} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
 
           <Link
             to="/career-guidance"
-            className="app-card p-2.5 sm:p-3 hover:border-purple-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
+            className="app-card p-2.5 sm:p-3 hover:border-blue-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
           >
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0 group-hover:scale-105 transition-transform">
               <Compass size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate">
+              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                 Career Guide
               </h4>
               <p className="text-[10px] text-slate-400 truncate">Placement & Resumes</p>
             </div>
-            <ArrowRight size={12} className="text-slate-300 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+            <ArrowRight size={12} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
 
           <Link
             to="/skills"
-            className="app-card p-2.5 sm:p-3 hover:border-purple-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
+            className="app-card p-2.5 sm:p-3 hover:border-blue-300 hover:shadow-xs transition-all group flex items-center gap-2.5"
           >
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0 group-hover:scale-105 transition-transform">
               <Code2 size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate">
+              <h4 className="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                 Skill Matrix
               </h4>
               <p className="text-[10px] text-slate-400 truncate">Verified Rubrics</p>
             </div>
-            <ArrowRight size={12} className="text-slate-300 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+            <ArrowRight size={12} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
         </div>
       </div>
@@ -324,7 +326,7 @@ export default function StudentDashboard() {
               </div>
               <Link
                 to="/progress"
-                className="text-xs font-medium text-slate-600 hover:text-purple-600 flex items-center gap-1 transition-colors"
+                className="text-xs font-medium text-slate-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
               >
                 <span>Full Telemetry</span>
                 <ArrowRight size={12} />
@@ -336,14 +338,14 @@ export default function StudentDashboard() {
               <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-2">
                 <div className="flex items-center justify-between text-xs font-medium text-slate-500">
                   <span>Academic Standing</span>
-                  <Award size={15} className="text-purple-600" />
+                  <Award size={15} className="text-blue-600" />
                 </div>
                 <p className="font-display text-xl font-bold text-slate-900">
                   {data.student?.cgpa !== undefined ? `${data.student.cgpa} CGPA` : "Not evaluated"}
                 </p>
                 <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-600 rounded-full"
+                    className="h-full bg-blue-600 rounded-full"
                     style={{ width: `${Math.min(100, (Number(data.student?.cgpa || 0) / 10) * 100)}%` }}
                   />
                 </div>
@@ -356,7 +358,7 @@ export default function StudentDashboard() {
               <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-2">
                 <div className="flex items-center justify-between text-xs font-medium text-slate-500">
                   <span>Skill Mastery</span>
-                  <Code2 size={15} className="text-purple-600" />
+                  <Code2 size={15} className="text-blue-600" />
                 </div>
                 <p className="font-display text-xl font-bold text-slate-900">
                   {data.student?.skills?.length || 0} Competencies
@@ -376,14 +378,14 @@ export default function StudentDashboard() {
               <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-2">
                 <div className="flex items-center justify-between text-xs font-medium text-slate-500">
                   <span>Career Readiness</span>
-                  <Compass size={15} className="text-purple-600" />
+                  <Compass size={15} className="text-blue-600" />
                 </div>
                 <p className="font-display text-xl font-bold text-slate-900">
                   {data.student?.placementStatus ? data.student.placementStatus.replace(/_/g, " ") : "In Progress"}
                 </p>
                 <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-600 rounded-full"
+                    className="h-full bg-blue-600 rounded-full"
                     style={{
                       width:
                         data.student?.placementStatus === "PLACED"
@@ -405,7 +407,7 @@ export default function StudentDashboard() {
           <div className="app-card overflow-hidden">
             <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-2">
-                <ListTodo size={16} className="text-purple-600" />
+                <ListTodo size={16} className="text-blue-600" />
                 <h3 className="font-display text-xs sm:text-sm font-bold text-slate-900">Mentor Assigned Action Items</h3>
               </div>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/70">
@@ -474,7 +476,7 @@ export default function StudentDashboard() {
           <div className="app-card p-5 space-y-3.5">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Faculty Mentor</p>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 font-bold text-sm flex items-center justify-center border border-purple-100 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 font-bold text-sm flex items-center justify-center border border-blue-100 shrink-0">
                 {data.myMentor?.fullName ? data.myMentor.fullName[0] : "P"}
               </div>
               <div className="min-w-0">
@@ -505,6 +507,72 @@ export default function StudentDashboard() {
               className="btn-secondary w-full py-2 text-xs flex items-center justify-center gap-1.5"
             >
               <Bot size={13} /> Request 1:1 Advisory Prep
+            </Link>
+          </div>
+
+          {/* Student Fee Standing Card (Real DB) */}
+          <div className="app-card p-5 space-y-3.5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <CreditCard size={13} className="text-blue-600" /> Fee Standing
+              </p>
+              {data.feeDetails?.hasFeeData ? (
+                (() => {
+                  switch (data.feeDetails.feeStatus) {
+                    case "PAID":
+                      return <Badge tone="success" size="sm">Paid</Badge>;
+                    case "PARTIALLY_PAID":
+                      return <Badge tone="warning" size="sm">Partial</Badge>;
+                    case "PENDING":
+                      return <Badge tone="info" size="sm">Pending</Badge>;
+                    case "OVERDUE":
+                      return <Badge tone="danger" size="sm">Overdue</Badge>;
+                    default:
+                      return <Badge tone="neutral" size="sm">Unknown</Badge>;
+                  }
+                })()
+              ) : (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                  Unavailable
+                </span>
+              )}
+            </div>
+
+            {data.feeDetails?.hasFeeData ? (
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <p className="text-[10px] text-slate-400 uppercase font-semibold">Total Fee</p>
+                    <p className="font-bold text-slate-800 font-mono mt-0.5">
+                      ₹{data.feeDetails.totalFees?.toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <p className="text-[10px] text-slate-400 uppercase font-semibold">Outstanding</p>
+                    <p className={`font-bold font-mono mt-0.5 ${data.feeDetails.outstandingAmount > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                      ₹{data.feeDetails.outstandingAmount?.toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                </div>
+                {data.feeDetails.academicYear && (
+                  <p className="text-[11px] text-slate-500">
+                    Academic Year: <span className="font-semibold text-slate-700">{data.feeDetails.academicYear}</span>
+                    {data.feeDetails.semester ? ` (Sem ${data.feeDetails.semester})` : ""}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500 bg-slate-50/80 p-3 rounded-xl border border-slate-100">
+                FEE DATA: NOT PRESENT IN DATABASE. No fee billing records are linked to your student account.
+              </p>
+            )}
+
+            <Link
+              to="/profile"
+              className="btn-secondary w-full py-2 text-xs flex items-center justify-center gap-1.5"
+            >
+              <span>View Full Ledger</span>
+              <ArrowRight size={12} />
             </Link>
           </div>
         </div>

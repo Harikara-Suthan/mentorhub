@@ -14,7 +14,7 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const list = asyncHandler(async (req: Request, res: Response) => {
-  const { search, departmentId, year, section, mentorId, riskLevel, page, pageSize } = req.query;
+  const { search, departmentId, year, section, mentorId, riskLevel, semester, attendance, arrears, academicStatus, feeStatus, page, pageSize } = req.query;
   const result = await studentService.listStudents(
     req.user!,
     {
@@ -24,6 +24,11 @@ export const list = asyncHandler(async (req: Request, res: Response) => {
       section: section as string,
       mentorId: mentorId as string,
       riskLevel: riskLevel as string,
+      semester: semester as string,
+      attendance: attendance as string,
+      arrears: arrears as string,
+      academicStatus: academicStatus as string,
+      feeStatus: feeStatus as string,
     },
     page ? Number(page) : 1,
     pageSize ? Number(pageSize) : 20
@@ -35,6 +40,30 @@ export const getById = asyncHandler(async (req: Request, res: Response) => {
   const student = await studentService.getStudentById(req.user!, req.params.id);
   await logAudit(req, "Student Viewed", "Student", req.params.id);
   res.json({ success: true, data: student });
+});
+
+export const getFees = asyncHandler(async (req: Request, res: Response) => {
+  const fees = await studentService.getStudentFees(req.user!, req.params.id);
+  await logAudit(req, "Student Fees Viewed", "Student", req.params.id);
+  res.json({ success: true, data: fees });
+});
+
+export const addFee = asyncHandler(async (req: Request, res: Response) => {
+  const fee = await studentService.addStudentFee(req.user!, req.params.id, req.body);
+  await logAudit(req, "Student Fee Added", "Student", req.params.id);
+  res.status(201).json({ success: true, data: fee });
+});
+
+export const updateFee = asyncHandler(async (req: Request, res: Response) => {
+  const fee = await studentService.updateStudentFee(req.user!, req.params.id, req.params.feeId, req.body);
+  await logAudit(req, "Student Fee Updated", "Student", req.params.id);
+  res.json({ success: true, data: fee });
+});
+
+export const deleteFee = asyncHandler(async (req: Request, res: Response) => {
+  await studentService.deleteStudentFee(req.user!, req.params.id, req.params.feeId);
+  await logAudit(req, "Student Fee Deleted", "Student", req.params.id);
+  res.json({ success: true, message: "Fee record removed successfully" });
 });
 
 export const getFinancial = asyncHandler(async (req: Request, res: Response) => {

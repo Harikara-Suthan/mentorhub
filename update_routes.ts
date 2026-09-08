@@ -1,0 +1,68 @@
+import fs from 'fs';
+
+let content = fs.readFileSync('server/src/routes/departmentRoutes.ts', 'utf8');
+
+// We will replace the router.get("/mentors/all", ...) block entirely.
+const newBlock = `
+router.get("/mentors/all", asyncHandler(async (req, res) => {
+  const user = req.user!;
+  
+  let where: any = {};
+  let hodDepartmentId: string | null = null;
+  
+  if (user.role === "HOD" || user.role === "MENTOR") {
+    const currentUserMentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (currentUserMentor) {
+      hodDepartmentId = currentUserMentor.departmentId;
+      where = {
+        OR: [
+          { departmentId: currentUserMentor.departmentId },
+          { students: { some: { departmentId: currentUserMentor.departmentId } } }
+        ]
+      };
+    }
+  } else if (user.role === "STUDENT") {
+    const student = await prisma.student.findUnique({ where: { userId: user.userId } });
+    if (student) {
+      where = {
+        OR: [
+          { departmentId: student.departmentId },
+          { students: { some: { id: student.id } } }
+        ]
+      };
+    }
+  }
+
+  const mentors = await prisma.mentor.findMany({
+    where,
+    select: { id: true, fullName: true, departmentId: true, employeeId: true, department: true },
+    orderBy: { fullName: "asc" },
+  });
+  
+  // Transform to add cross-department flags
+  const transformed = mentors.map(m => {
+    let isCrossDepartment = false;
+    let crossDepartmentLabel = "";
+    
+    if (hodDepartmentId && m.departmentId !== hodDepartmentId) {
+       isCrossDepartment = true;
+       // Assuming the HOD's department is known in the frontend, but we can pass a label.
+       // E.g. "CSE Faculty — Teaching AI & DS"
+       crossDepartmentLabel = \`\${m.department?.name || 'Other'} Faculty - Cross-Teaching\`;
+    }
+    
+    return {
+      ...m,
+      isCrossDepartment,
+      crossDepartmentLabel
+    };
+  });
+
+  res.json({ success: true, data: transformed });
+}));
+`;
+
+content = content.replace(/router\.get\("\/mentors\/all", asyncHandler\(async \(_req, res\) => \{[\s\S]*?res\.json\(\{ success: true, data: mentors \}\);\s*\}\)\);/, newBlock.trim());
+
+fs.writeFileSync('server/src/routes/departmentRoutes.ts', content, 'utf8');
+console.log("Updated departmentRoutes.ts");

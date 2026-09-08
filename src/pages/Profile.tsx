@@ -23,6 +23,7 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import { BackButton } from "../components/ui/BackButton";
 import { getUserAvatar, setUserAvatar } from "../utils/avatar";
+import { StudentFeeSection } from "../components/StudentFeeSection";
 
 export function Profile() {
   const { user, logout, refreshUser, updateUser } = useAuth();
@@ -209,7 +210,7 @@ export function Profile() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -241,7 +242,7 @@ export function Profile() {
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               {isStudent ? (
                 <>
-                  Reg. No: <span className="font-mono font-semibold text-slate-700">{profileData?.registerNumber || "Not assigned"}</span> • {profileData?.degree || "Undergraduate Degree"}
+                  Roll: <span className="font-mono font-semibold text-blue-700">{profileData?.rollNumber || "Not assigned"}</span> • Reg: <span className="font-mono font-semibold text-slate-700">{profileData?.registerNumber || "Not assigned"}</span> • {profileData?.degree || "Undergraduate Degree"}
                 </>
               ) : (
                 <>
@@ -256,7 +257,7 @@ export function Profile() {
           <button
             id="btn_edit_profile"
             onClick={() => setIsEditing(true)}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
           >
             <Edit3 size={14} />
             <span>Edit Profile</span>
@@ -282,9 +283,9 @@ export function Profile() {
       {/* Main Profile Hero Card */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {/* Cover Banner */}
-        <div className="h-32 sm:h-36 bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-900 relative flex items-start justify-end p-4 sm:p-5">
+        <div className="h-32 sm:h-36 bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 relative flex items-start justify-end p-4 sm:p-5">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase bg-white/10 backdrop-blur-md text-white border border-white/20 shadow-xs">
-            <ShieldCheck size={13} className="text-purple-300" />
+            <ShieldCheck size={13} className="text-sky-300" />
             {user?.role} Account
           </span>
         </div>
@@ -316,8 +317,8 @@ export function Profile() {
                   <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">
                     {name}
                   </h2>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200/70 shrink-0">
-                    <ShieldCheck size={13} className="text-purple-600" /> Verified
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200/70 shrink-0">
+                    <ShieldCheck size={13} className="text-blue-600" /> Verified
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-600 font-medium leading-normal">
@@ -332,7 +333,7 @@ export function Profile() {
               <button
                 id="btn_quick_message"
                 onClick={() => navigate("/messages")}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 hover:border-purple-300 text-xs font-semibold transition-colors cursor-pointer w-full sm:w-auto shadow-2xs"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 text-xs font-semibold transition-colors cursor-pointer w-full sm:w-auto shadow-2xs"
               >
                 <MessageSquare size={14} />
                 <span>Open Messages</span>
@@ -343,8 +344,16 @@ export function Profile() {
           {/* Quick Statistics Grid */}
           {isStudent ? (
             <div className="border-t border-slate-100 pt-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
                 <div className="flex flex-col justify-center sm:px-2 pt-2 sm:pt-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    Roll Number
+                  </p>
+                  <p className="font-bold text-blue-700 text-sm sm:text-base mt-1 font-mono">
+                    {profileData?.rollNumber || "Not assigned"}
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center sm:px-3 pt-2 sm:pt-0">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Register Number
                   </p>
@@ -352,7 +361,7 @@ export function Profile() {
                     {profileData?.registerNumber || "Not provided"}
                   </p>
                 </div>
-                <div className="flex flex-col justify-center sm:px-4 pt-2 sm:pt-0">
+                <div className="flex flex-col justify-center sm:px-3 pt-2 sm:pt-0">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Cumulative CGPA
                   </p>
@@ -361,15 +370,15 @@ export function Profile() {
                     <span className="text-xs text-slate-400 font-normal">/ 10.0</span>
                   </p>
                 </div>
-                <div className="flex flex-col justify-center sm:px-4 pt-2 sm:pt-0">
+                <div className="flex flex-col justify-center sm:px-3 pt-2 sm:pt-0">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Attendance Rate
                   </p>
-                  <p className="font-bold text-purple-600 text-sm sm:text-base mt-1">
+                  <p className="font-bold text-blue-600 text-sm sm:text-base mt-1">
                     {profileData?.attendancePercentage !== undefined ? `${profileData.attendancePercentage}%` : "Not provided"}
                   </p>
                 </div>
-                <div className="flex flex-col justify-center sm:px-4 pt-2 sm:pt-0">
+                <div className="flex flex-col justify-center sm:px-3 pt-2 sm:pt-0">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Standing Arrears
                   </p>
@@ -394,7 +403,7 @@ export function Profile() {
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Department
                   </p>
-                  <p className="font-bold text-purple-700 text-sm sm:text-base mt-1">
+                  <p className="font-bold text-blue-700 text-sm sm:text-base mt-1">
                     {mentorData?.department || "Not assigned"}
                   </p>
                 </div>
@@ -432,7 +441,7 @@ export function Profile() {
             <div className="space-y-3.5">
               {/* Institutional Email */}
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
                   <Mail size={15} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -447,7 +456,7 @@ export function Profile() {
 
               {/* Phone Line */}
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
                   <Phone size={15} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -462,7 +471,7 @@ export function Profile() {
 
               {/* Address & Location */}
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
                   <MapPin size={15} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -483,8 +492,8 @@ export function Profile() {
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 Assigned Faculty Mentor
               </h3>
-              <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-purple-50/70 border border-purple-100/80">
-                <div className="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+              <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-blue-50/70 border border-blue-100/80">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
                   {profileData.mentor.fullName.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -499,7 +508,7 @@ export function Profile() {
               <button
                 id="btn_message_assigned_mentor"
                 onClick={() => navigate("/messages")}
-                className="w-full py-2 px-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold text-center transition-colors cursor-pointer shadow-xs inline-flex items-center justify-center gap-2"
+                className="w-full py-2 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold text-center transition-colors cursor-pointer shadow-xs inline-flex items-center justify-center gap-2"
               >
                 <MessageSquare size={14} />
                 <span>Message Mentor Directly</span>
@@ -522,7 +531,7 @@ export function Profile() {
                     Relation: <span className="font-semibold text-slate-700">{formData.emergencyContactRelation}</span>
                   </p>
                 )}
-                <p className="text-xs text-purple-700 font-semibold font-mono pt-0.5">
+                <p className="text-xs text-blue-700 font-semibold font-mono pt-0.5">
                   {formData.emergencyContactPhone || "Not provided"}
                 </p>
               </div>
@@ -563,7 +572,7 @@ export function Profile() {
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
                     Primary Career Milestone
                   </p>
-                  <p className="font-bold text-purple-700 text-xs sm:text-sm mt-1 leading-snug">
+                  <p className="font-bold text-blue-700 text-xs sm:text-sm mt-1 leading-snug">
                     {formData.careerGoal || "Not specified"}
                   </p>
                 </div>
@@ -579,7 +588,7 @@ export function Profile() {
                     {formData.skills.split(",").map((sk, idx) => (
                       <span
                         key={idx}
-                        className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 border border-purple-200/80 text-xs font-medium"
+                        className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/80 text-xs font-medium"
                       >
                         {sk.trim()}
                       </span>
@@ -620,9 +629,9 @@ export function Profile() {
                       href={formData.githubUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/30 text-slate-700 transition-colors group min-w-0"
+                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 text-slate-700 transition-colors group min-w-0"
                     >
-                      <Github size={15} className="text-slate-700 shrink-0 group-hover:text-purple-600" />
+                      <Github size={15} className="text-slate-700 shrink-0 group-hover:text-blue-600" />
                       <span className="truncate font-medium flex-1">GitHub Profile</span>
                     </a>
                   )}
@@ -631,7 +640,7 @@ export function Profile() {
                       href={formData.linkedinUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/30 text-slate-700 transition-colors group min-w-0"
+                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 text-slate-700 transition-colors group min-w-0"
                     >
                       <Linkedin size={15} className="text-blue-600 shrink-0" />
                       <span className="truncate font-medium flex-1">LinkedIn Profile</span>
@@ -642,7 +651,7 @@ export function Profile() {
                       href={formData.portfolioUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/30 text-slate-700 transition-colors group min-w-0"
+                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 text-slate-700 transition-colors group min-w-0"
                     >
                       <Globe size={15} className="text-emerald-600 shrink-0" />
                       <span className="truncate font-medium flex-1">Personal Portfolio</span>
@@ -653,9 +662,9 @@ export function Profile() {
                       href={formData.resumeUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/30 text-slate-700 transition-colors group min-w-0"
+                      className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 text-slate-700 transition-colors group min-w-0"
                     >
-                      <FileText size={15} className="text-purple-600 shrink-0" />
+                      <FileText size={15} className="text-blue-600 shrink-0" />
                       <span className="truncate font-medium flex-1">Verified Resume PDF</span>
                     </a>
                   )}
@@ -683,7 +692,7 @@ export function Profile() {
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
                     Research & Teaching Specialization
                   </p>
-                  <p className="font-bold text-purple-700 text-xs sm:text-sm mt-0.5">
+                  <p className="font-bold text-blue-700 text-xs sm:text-sm mt-0.5">
                     {mentorData?.specialization || "Not specified"}
                   </p>
                 </div>
@@ -726,6 +735,16 @@ export function Profile() {
                 🔒 Account numbers are masked for data privacy according to institutional security standards.
               </p>
             </div>
+          )}
+
+          {/* Student Official Fee Ledger & Payment Status */}
+          {isStudent && profileData?.id && (
+            <StudentFeeSection
+              studentId={profileData.id}
+              feeDetails={profileData.feeDetails}
+              userRole={user?.role}
+              onFeeUpdated={fetchProfile}
+            />
           )}
         </div>
       </div>
@@ -775,19 +794,19 @@ export function Profile() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <input
+                    <input autoComplete="off"
                       id="input_profile_picture"
                       type="text"
                       placeholder="Enter photo URL or use upload button"
                       value={formData.profilePicture}
                       onChange={(e) => setFormData({ ...formData, profilePicture: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                     />
                     <div className="flex items-center gap-3 mt-1.5">
                       <label className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md cursor-pointer transition-colors">
-                        <Upload size={12} className="text-purple-600" />
+                        <Upload size={12} className="text-blue-600" />
                         <span>Upload photo</span>
-                        <input
+                        <input autoComplete="off"
                           type="file"
                           accept="image/*"
                           className="hidden"
@@ -824,12 +843,12 @@ export function Profile() {
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Summary / Bio
                 </label>
-                <textarea
+                <textarea autoComplete="off"
                   id="input_bio"
                   rows={3}
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                 />
               </div>
 
@@ -839,24 +858,24 @@ export function Profile() {
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Phone Number
                   </label>
-                  <input
+                  <input autoComplete="off"
                     id="input_phone"
                     type="text"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     City
                   </label>
-                  <input
+                  <input autoComplete="off"
                     id="input_city"
                     type="text"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -867,24 +886,24 @@ export function Profile() {
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     State
                   </label>
-                  <input
+                  <input autoComplete="off"
                     id="input_state"
                     type="text"
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Address
                   </label>
-                  <input
+                  <input autoComplete="off"
                     id="input_address"
                     type="text"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -895,12 +914,12 @@ export function Profile() {
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Research & Teaching Specialization
                   </label>
-                  <input
+                  <input autoComplete="off"
                     id="input_specialization"
                     type="text"
                     value={formData.specialization}
                     onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                   />
                 </div>
               )}
@@ -913,28 +932,28 @@ export function Profile() {
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         Emergency Contact Person
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_emergency_name"
                         type="text"
                         value={formData.emergencyContactName}
                         onChange={(e) =>
                           setFormData({ ...formData, emergencyContactName: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         Emergency Contact Phone
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_emergency_phone"
                         type="text"
                         value={formData.emergencyContactPhone}
                         onChange={(e) =>
                           setFormData({ ...formData, emergencyContactPhone: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -945,36 +964,36 @@ export function Profile() {
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         Target Placement Role
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_target_role"
                         type="text"
                         value={formData.targetRole}
                         onChange={(e) => setFormData({ ...formData, targetRole: e.target.value })}
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         Career Goal / Milestone
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_career_goal"
                         type="text"
                         value={formData.careerGoal}
                         onChange={(e) => setFormData({ ...formData, careerGoal: e.target.value })}
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         Skills (comma separated)
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_skills"
                         type="text"
                         value={formData.skills}
                         onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -985,24 +1004,24 @@ export function Profile() {
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         GitHub Profile URL
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_github_url"
                         type="url"
                         value={formData.githubUrl}
                         onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                         LinkedIn Profile URL
                       </label>
-                      <input
+                      <input autoComplete="off"
                         id="input_linkedin_url"
                         type="url"
                         value={formData.linkedinUrl}
                         onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -1023,7 +1042,7 @@ export function Profile() {
                   type="submit"
                   id="btn_save_profile_submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
                 >
                   <Save size={14} />
                   <span>{submitting ? "Saving..." : "Save Changes"}</span>

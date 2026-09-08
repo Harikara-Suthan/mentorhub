@@ -83,20 +83,20 @@ export default function CareerGuidance() {
   return (
     <div className="space-y-6 sm:space-y-7 animate-in fade-in duration-300">
       {/* Banner */}
-      <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-purple-950 text-white border border-purple-500/20 shadow-xs relative overflow-hidden">
+      <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-blue-950 text-white border border-blue-500/20 shadow-xs relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2.5 mb-2 flex-wrap">
               <BackButton fallback="/dashboard" />
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-purple-500/25 text-purple-200 border border-purple-400/30">
-                <Sparkles size={11} className="text-purple-300" /> Career Intelligence
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-blue-500/25 text-blue-200 border border-blue-400/30">
+                <Sparkles size={11} className="text-sky-300" /> Career Intelligence
               </span>
-              <span className="text-xs text-purple-200/70 font-medium">Placement & Industry Ready</span>
+              <span className="text-xs text-blue-200/70 font-medium">Placement & Industry Ready</span>
             </div>
             <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">
               Career Guidance & Placement Hub
             </h1>
-            <p className="text-xs md:text-sm text-purple-200/70 mt-1 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs md:text-sm text-blue-200/70 mt-1 max-w-xl font-normal leading-relaxed">
               Target role roadmaps, ATS resume review, placement eligibility metrics, and technical interview simulations.
             </p>
           </div>
@@ -115,7 +115,7 @@ export default function CareerGuidance() {
       {/* Placement Readiness Score Banner */}
       <div className="app-card p-5 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col lg:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-purple-600 text-white flex flex-col items-center justify-center font-display font-black text-xl sm:text-2xl shrink-0">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-600 text-white flex flex-col items-center justify-center font-display font-black text-xl sm:text-2xl shrink-0">
             86
             <span className="text-[9px] font-sans font-bold tracking-wider uppercase opacity-80">/ 100</span>
           </div>
@@ -140,7 +140,7 @@ export default function CareerGuidance() {
             </div>
             <div className="px-2">
               <p className="text-xs text-slate-500 font-medium">Resume ATS</p>
-              <p className="font-display text-base sm:text-lg font-bold text-purple-700 mt-0.5">92%</p>
+              <p className="font-display text-base sm:text-lg font-bold text-blue-700 mt-0.5">92%</p>
             </div>
             <div className="px-2">
               <p className="text-xs text-slate-500 font-medium">Mock Score</p>
@@ -166,12 +166,12 @@ export default function CareerGuidance() {
               onClick={() => setSelectedRole(role)}
               className={`app-card p-5 cursor-pointer transition-all ${
                 selectedRole.id === role.id
-                  ? "border-purple-600 bg-purple-50/20 shadow-xs ring-1 ring-purple-600/30"
-                  : "hover:border-purple-300"
+                  ? "border-blue-600 bg-blue-50/20 shadow-xs ring-1 ring-blue-600/30"
+                  : "hover:border-blue-300"
               }`}
             >
               <div className="flex items-start justify-between">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-800">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 text-blue-800">
                   {role.demand} Demand
                 </span>
                 <span className="text-xs font-bold text-emerald-600">{role.avgPackage}</span>
@@ -182,11 +182,11 @@ export default function CareerGuidance() {
               <div className="mt-3 space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-muted font-medium">Skill Match</span>
-                  <span className="font-bold text-purple-700">{role.matchScore}%</span>
+                  <span className="font-bold text-blue-700">{role.matchScore}%</span>
                 </div>
                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-600 rounded-full"
+                    className="h-full bg-blue-600 rounded-full"
                     style={{ width: `${role.matchScore}%` }}
                   />
                 </div>
@@ -213,9 +213,9 @@ export default function CareerGuidance() {
         <div className="app-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-display text-base font-bold text-navy flex items-center gap-2">
-              <FileCheck2 size={18} className="text-purple-600" /> ATS Resume Scorecard
+              <FileCheck2 size={18} className="text-blue-600" /> ATS Resume Scorecard
             </h3>
-            <span className="text-xs font-mono font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-lg">
+            <span className="text-xs font-mono font-bold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-lg">
               92 / 100
             </span>
           </div>
@@ -249,9 +249,9 @@ export default function CareerGuidance() {
 
           <Link
             to="/ai-mentor"
-            className="w-full py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold border border-purple-200 flex items-center justify-center gap-1.5 transition-colors"
+            className="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 text-xs font-bold border border-blue-200 flex items-center justify-center gap-1.5 transition-colors"
           >
-            <Sparkles size={14} className="text-purple-700" /> Ask AI to Review Project Bullets →
+            <Sparkles size={14} className="text-blue-700" /> Ask AI to Review Project Bullets →
           </Link>
         </div>
 
@@ -259,7 +259,7 @@ export default function CareerGuidance() {
         <div className="app-card p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-display text-base font-bold text-navy flex items-center gap-2">
-              <Code2 size={18} className="text-purple-600" /> Core Placement Questions
+              <Code2 size={18} className="text-blue-600" /> Core Placement Questions
             </h3>
             <span className="text-xs text-slate-muted">High Frequency Rounds</span>
           </div>
@@ -274,10 +274,10 @@ export default function CareerGuidance() {
                 >
                   <button
                     onClick={() => setExpandedFaq(isExpanded ? null : idx)}
-                    className="w-full p-3.5 text-left flex items-center justify-between gap-3 hover:bg-purple-50/40"
+                    className="w-full p-3.5 text-left flex items-center justify-between gap-3 hover:bg-blue-50/40"
                   >
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 block">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 block">
                         {q.category}
                       </span>
                       <p className="text-xs font-bold text-navy mt-0.5">{q.question}</p>
@@ -285,7 +285,7 @@ export default function CareerGuidance() {
                     <ChevronDown
                       size={16}
                       className={`text-slate-muted transition-transform shrink-0 ${
-                        isExpanded ? "rotate-180 text-purple-600" : ""
+                        isExpanded ? "rotate-180 text-blue-600" : ""
                       }`}
                     />
                   </button>

@@ -13,6 +13,7 @@ export interface MentorChatRequest {
     role?: string;
     name?: string;
     registerNumber?: string;
+    rollNumber?: string;
     employeeId?: string;
     department?: string;
     deptCode?: string;
@@ -73,7 +74,8 @@ export async function runMentorChatAgent(req: MentorChatRequest): Promise<Mentor
   const cgpa = req.userProfile?.cgpa ?? req.studentContext?.cgpa ?? 8.4;
   const attendance = req.userProfile?.attendance ?? req.studentContext?.attendance ?? 88;
   const arrears = req.userProfile?.arrears ?? 0;
-  const regNo = req.userProfile?.registerNumber || "23CSE101";
+  const regNo = req.userProfile?.registerNumber || "724024243001";
+  const rollNo = req.userProfile?.rollNumber || "Not assigned";
   const mentorName = req.userProfile?.mentorName || "Dr. Priya Raman";
   const mentorDesignation = req.userProfile?.mentorDesignation || "Assistant Professor";
   const mentorPhone = req.userProfile?.mentorPhone || "9876510001";
@@ -83,7 +85,8 @@ export async function runMentorChatAgent(req: MentorChatRequest): Promise<Mentor
 - Full Name: ${name}
 - Role: ${role}
 - Department: ${dept}
-- Register Number / ID: ${regNo}
+- Register Number: ${regNo}
+- Roll Number: ${rollNo}
 - Current CGPA: ${cgpa}
 - Attendance Percentage: ${attendance}%
 - Active Standing Arrears: ${arrears}

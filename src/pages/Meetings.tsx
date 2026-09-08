@@ -48,8 +48,9 @@ export default function Meetings() {
       const q = search.toLowerCase();
       const matchName = m.student?.fullName?.toLowerCase().includes(q);
       const matchReg = m.student?.registerNumber?.toLowerCase().includes(q);
+      const matchRoll = m.student?.rollNumber?.toLowerCase().includes(q);
       const matchSummary = (m.aiSummary || m.discussionSummary || "").toLowerCase().includes(q);
-      if (!matchName && !matchReg && !matchSummary) return false;
+      if (!matchName && !matchReg && !matchRoll && !matchSummary) return false;
     }
     return true;
   });
@@ -85,7 +86,7 @@ export default function Meetings() {
       <div className="app-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white/90">
         <div className="relative flex-1 max-w-md">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-muted" />
-          <input
+          <input autoComplete="off"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search meetings by student or discussion..."
@@ -143,6 +144,11 @@ export default function Meetings() {
                     >
                       {m.student?.fullName}
                     </Link>
+                    {m.student?.rollNumber && (
+                      <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        {m.student.rollNumber}
+                      </span>
+                    )}
                     <span className="font-mono text-xs text-slate-muted">
                       ({m.student?.registerNumber})
                     </span>
@@ -304,7 +310,7 @@ function RecordMeetingModal({
                 <option value="">Select a student...</option>
                 {students.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.fullName} — {s.registerNumber} ({s.year}-{s.section})
+                    {s.fullName} — {s.rollNumber ? `${s.rollNumber} • ` : ""}Reg: {s.registerNumber} ({s.year}-{s.section})
                   </option>
                 ))}
               </select>
@@ -315,7 +321,7 @@ function RecordMeetingModal({
                 <label className="block text-[11px] font-bold text-navy uppercase tracking-wider mb-1">
                   Meeting Date <span className="text-rose-500">*</span>
                 </label>
-                <input
+                <input autoComplete="off"
                   type="date"
                   required
                   className="w-full px-3.5 py-2 text-xs md:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500"
@@ -343,7 +349,7 @@ function RecordMeetingModal({
               <label className="block text-[11px] font-bold text-navy uppercase tracking-wider mb-1">
                 Session Discussion Summary <span className="text-rose-500">*</span>
               </label>
-              <textarea
+              <textarea autoComplete="off"
                 required
                 rows={3}
                 className="w-full px-3.5 py-2 text-xs md:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500"
@@ -357,7 +363,7 @@ function RecordMeetingModal({
               <label className="block text-[11px] font-bold text-navy uppercase tracking-wider mb-1">
                 Student Concerns / Challenges
               </label>
-              <textarea
+              <textarea autoComplete="off"
                 rows={2}
                 className="w-full px-3.5 py-2 text-xs md:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500"
                 value={form.studentConcerns}
@@ -370,7 +376,7 @@ function RecordMeetingModal({
               <label className="block text-[11px] font-bold text-navy uppercase tracking-wider mb-1">
                 Mentor Advice & Next Commitments
               </label>
-              <textarea
+              <textarea autoComplete="off"
                 rows={2}
                 className="w-full px-3.5 py-2 text-xs md:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500"
                 value={form.mentorSuggestions}
@@ -383,7 +389,7 @@ function RecordMeetingModal({
               <label className="block text-[11px] font-bold text-navy uppercase tracking-wider mb-1">
                 Next Scheduled Follow-up Date
               </label>
-              <input
+              <input autoComplete="off"
                 type="date"
                 className="w-full px-3.5 py-2 text-xs md:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500"
                 value={form.nextFollowUpDate}

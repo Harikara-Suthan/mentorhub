@@ -46,8 +46,8 @@ export function StatCard({
       valueColor: "text-slate-900",
     },
     purple: {
-      border: "border-slate-200/80 hover:border-purple-300",
-      iconBg: "bg-purple-50 text-purple-700",
+      border: "border-slate-200/80 hover:border-blue-300",
+      iconBg: "bg-blue-50 text-blue-700",
       valueColor: "text-slate-900",
     },
   }[accent];
@@ -56,7 +56,7 @@ export function StatCard({
     <div
       onClick={onClick}
       className={`app-card p-2.5 sm:p-3 flex flex-col justify-between relative overflow-hidden transition-all duration-150 ${
-        onClick ? "cursor-pointer hover:border-purple-300 hover:shadow-xs active:scale-[0.99]" : ""
+        onClick ? "cursor-pointer hover:border-blue-300 hover:shadow-xs active:scale-[0.99]" : ""
       } ${accentConfigs.border}`}
     >
       <div className="flex items-center justify-between gap-1.5 mb-1.5">

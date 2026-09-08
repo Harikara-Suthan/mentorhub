@@ -11,8 +11,15 @@ import {
   Flame,
   Brain,
   X,
+  User,
+  GraduationCap,
+  AlertTriangle,
+  FileText,
+  Bookmark,
 } from "lucide-react";
 import { BackButton } from "../components/ui/BackButton";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../api/client";
 
 interface StudyTask {
   id: string;
@@ -97,8 +104,14 @@ const UPCOMING_EXAMS = [
 ];
 
 export default function StudyPlanner() {
+  const { user } = useAuth();
+  const [students, setStudents] = useState<any[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string>("");
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
   const [tasks, setTasks] = useState<StudyTask[]>(INITIAL_TASKS);
-  const [activeTab, setActiveTab] = useState<"TODAY" | "WEEK" | "EXAMS">("TODAY");
+  const [activeTab, setActiveTab] = useState<"TODAY" | "WEEK" | "EXAMS" | "PROFILE">("TODAY");
 
   // Pomodoro Focus Timer State
   const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -112,6 +125,42 @@ export default function StudyPlanner() {
   const [newTopic, setNewTopic] = useState("");
   const [newDuration, setNewDuration] = useState("45");
   const [newPriority, setNewPriority] = useState<"HIGH" | "MEDIUM" | "LOW">("MEDIUM");
+
+  // Load students for Mentor or HOD, or load student's own context
+  useEffect(() => {
+    if (user?.role === "MENTOR" || user?.role === "HOD") {
+      setLoading(true);
+      api.get("/students", { params: { pageSize: 100 } })
+        .then((res) => {
+          const list = res.data.data?.items || [];
+          setStudents(list);
+          if (list.length > 0) {
+            setSelectedStudentId(list[0].id);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    } else if (user?.role === "STUDENT") {
+      setLoading(true);
+      api.get("/dashboard")
+        .then((res) => {
+          setSelectedStudent(res.data.data?.student || null);
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, [user]);
+
+  // When a student is selected by Mentor or HOD, fetch their full profile details
+  useEffect(() => {
+    if (selectedStudentId && (user?.role === "MENTOR" || user?.role === "HOD")) {
+      api.get(`/students/${selectedStudentId}`)
+        .then((res) => {
+          setSelectedStudent(res.data.data || null);
+        })
+        .catch(console.error);
+    }
+  }, [selectedStudentId, user]);
 
   useEffect(() => {
     let interval: any = null;
@@ -180,35 +229,187 @@ export default function StudyPlanner() {
   const completedCount = tasks.filter((t) => t.completed).length;
   const progressPercent = Math.round((completedCount / tasks.length) * 100) || 0;
 
+  // Compute live AI recommendations based on selected student parameters
+  const getAiRecommendation = () => {
+    if (!selectedStudent) {
+      return "Select a student record to generate academic advice and tailored spaced-repetition schedules.";
+    }
+
+    const { fullName, attendancePercentage, arrearCount, cgpa, year, section } = selectedStudent;
+    const items: string[] = [];
+
+    if (attendancePercentage < 85) {
+      items.push(`Attendance is currently ${attendancePercentage}%, which is below the expected 85% guideline. Highly recommend allocating daily 45-minute recovery sessions to cover missed classroom lectures.`);
+    }
+
+    if (arrearCount > 0) {
+      items.push(`Student has ${arrearCount} backlogs. Ensure that high-priority daily blocks are dedicated strictly to backlog subjects first before general syllabus review.`);
+    }
+
+    if (cgpa < 6.5) {
+      items.push(`Academic standing indicates a CGPA of ${cgpa.toFixed(2)}. Suggest dividing study schedules into smaller 25-minute Pomodoro sprints for better conceptual reinforcement.`);
+    } else if (cgpa >= 8.5) {
+      items.push(`With a stellar CGPA of ${cgpa.toFixed(2)}, standard curriculum requirements are easily met. Allocate advanced 60-minute blocks for industry certifications or placement readiness coding.`);
+    }
+
+    if (items.length === 0) {
+      items.push("Student's primary performance criteria are robust and fully compliant with regulations. Focus blocks can be split between standard semester syllabus coverage and active-recall mock tests.");
+    }
+
+    return items.join(" ");
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
-      {/* Header Banner with Back Navigation */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+      {/* Header Banner with Back Navigation & Brand Treated Style */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 sm:p-6 md:p-8 rounded-2xl bg-sky-50 text-blue-950 border border-blue-100 shadow-xs relative overflow-hidden">
         <div className="relative z-10 space-y-2">
           <div className="flex items-center gap-2.5 flex-wrap">
             <BackButton fallback="/dashboard" />
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
-              <Sparkles size={12} className="text-purple-400" /> Spaced Repetition Engine
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800 border border-blue-200">
+              <Sparkles size={12} className="text-blue-600" /> Spaced Repetition Engine
             </span>
-            <span className="text-xs text-slate-400">Deep Work & Schedule</span>
+            <span className="text-xs text-blue-800/80">Deep Work Scheduling Hub</span>
           </div>
-          <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">
-            Personalized Study Planner
+          <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-blue-950">
+            Study Planner & Curriculum Scheduler
           </h1>
-          <p className="text-xs md:text-sm text-slate-300 max-w-xl leading-relaxed">
-            AI-optimized daily timetable, active recall milestones, and deep focus time-boxing.
+          <p className="text-xs md:text-sm text-slate-600 max-w-xl leading-relaxed">
+            AI-optimized daily timetable, active recall milestones, and personalized coaching time-boxing.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0 relative z-10 self-start md:self-auto">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="btn-primary text-xs py-2.5 px-4 shadow-xs cursor-pointer flex items-center gap-1.5"
-          >
-            <Plus size={15} /> Add Study Block
-          </button>
-        </div>
+        {user?.role !== "STUDENT" && (
+          <div className="flex items-center gap-3 shrink-0 relative z-10 self-start md:self-auto">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="btn-primary text-xs py-2.5 px-4 shadow-xs cursor-pointer flex items-center gap-1.5"
+            >
+              <Plus size={15} /> Add Study Block
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Student Profile & Cohort Context Selector for Mentors and HODs */}
+      {(user?.role === "MENTOR" || user?.role === "HOD") && (
+        <div className="app-card p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-blue-50 pb-3">
+            <div>
+              <h3 className="font-display font-bold text-slate-900 text-sm">Mentee Selection</h3>
+              <p className="text-xs text-slate-500">Select an authorized student to review and coordinate their active study plans</p>
+            </div>
+            <div className="relative min-w-[240px]">
+              <select
+                value={selectedStudentId}
+                onChange={(e) => setSelectedStudentId(e.target.value)}
+                className="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-900 font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition-colors cursor-pointer"
+              >
+                {students.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.fullName} ({st.registerNumber})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {selectedStudent && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-slate-400 font-medium flex items-center gap-1">
+                  <User size={13} className="text-blue-500" /> Student Profile
+                </p>
+                <p className="text-slate-900 font-bold mt-1 truncate">{selectedStudent.fullName}</p>
+                <p className="text-[10px] text-slate-500 font-mono mt-0.5">{selectedStudent.registerNumber}</p>
+              </div>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-slate-400 font-medium flex items-center gap-1">
+                  <GraduationCap size={13} className="text-blue-500" /> Academic & Class
+                </p>
+                <p className="text-slate-900 font-bold mt-1">Year {selectedStudent.year} · Sec {selectedStudent.section}</p>
+                <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Sem {selectedStudent.semester || "N/A"} · CGPA {selectedStudent.cgpa?.toFixed(2)}</p>
+              </div>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-slate-400 font-medium flex items-center gap-1">
+                  <Clock size={13} className="text-blue-500" /> Attendance Rate
+                </p>
+                <p className={`font-bold mt-1 text-sm ${selectedStudent.attendancePercentage < 85 ? "text-rose-600" : "text-emerald-600"}`}>
+                  {selectedStudent.attendancePercentage}%
+                </p>
+                <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                  {selectedStudent.attendancePercentage < 85 ? "Below 85% threshold" : "Compliant with norms"}
+                </p>
+              </div>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p className="text-slate-400 font-medium flex items-center gap-1">
+                  <AlertTriangle size={13} className="text-blue-500" /> Backlogs & Issues
+                </p>
+                <p className={`font-bold mt-1 text-sm ${selectedStudent.arrearCount > 0 ? "text-rose-600" : "text-slate-700"}`}>
+                  {selectedStudent.arrearCount} Arrears
+                </p>
+                <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                  Issues: {selectedStudent.issues?.length || 0} logged
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Student Personal Study Parameters */}
+      {user?.role === "STUDENT" && selectedStudent && (
+        <div className="app-card p-5 space-y-4">
+          <div className="border-b border-blue-50 pb-3">
+            <h3 className="font-display font-bold text-slate-900 text-sm">My Academic Standings</h3>
+            <p className="text-xs text-slate-500">Your profile details integrated directly into your Pomodoro workspace planner</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p className="text-slate-400 font-medium flex items-center gap-1">
+                <User size={13} className="text-blue-500" /> Mentee Name
+              </p>
+              <p className="text-slate-900 font-bold mt-1">{selectedStudent.fullName}</p>
+              <p className="text-[10px] text-slate-500 font-mono mt-0.5">{selectedStudent.registerNumber}</p>
+            </div>
+
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p className="text-slate-400 font-medium flex items-center gap-1">
+                <GraduationCap size={13} className="text-blue-500" /> Academic & Class
+              </p>
+              <p className="text-slate-900 font-bold mt-1">Year {selectedStudent.year} · Sec {selectedStudent.section}</p>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Sem {selectedStudent.semester || "N/A"} · CGPA {selectedStudent.cgpa?.toFixed(2)}</p>
+            </div>
+
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p className="text-slate-400 font-medium flex items-center gap-1">
+                <Clock size={13} className="text-blue-500" /> Attendance Rate
+              </p>
+              <p className={`font-bold mt-1 text-sm ${selectedStudent.attendancePercentage < 85 ? "text-rose-600" : "text-emerald-600"}`}>
+                {selectedStudent.attendancePercentage}%
+              </p>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                {selectedStudent.attendancePercentage < 85 ? "Below 85% threshold" : "Compliant with norms"}
+              </p>
+            </div>
+
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p className="text-slate-400 font-medium flex items-center gap-1">
+                <AlertTriangle size={13} className="text-blue-500" /> Backlogs & Issues
+              </p>
+              <p className={`font-bold mt-1 text-sm ${selectedStudent.arrearCount > 0 ? "text-rose-600" : "text-slate-700"}`}>
+                {selectedStudent.arrearCount} Arrears
+              </p>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                Keep track of backlogged subject modules
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main 2-Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -217,7 +418,7 @@ export default function StudyPlanner() {
           {/* Progress Overview Bar */}
           <div className="app-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0">
                 <Flame size={20} />
               </div>
               <div>
@@ -232,11 +433,11 @@ export default function StudyPlanner() {
               <div className="flex-1">
                 <div className="flex justify-between text-xs mb-1">
                   <span className="text-slate-500">Efficiency</span>
-                  <span className="font-semibold text-purple-700">{progressPercent}%</span>
+                  <span className="font-semibold text-blue-700">{progressPercent}%</span>
                 </div>
                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-600 rounded-full transition-all duration-500"
+                    className="h-full bg-blue-600 rounded-full transition-all duration-500"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -250,9 +451,9 @@ export default function StudyPlanner() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab("TODAY")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === "TODAY"
-                      ? "bg-purple-600 text-white shadow-xs"
+                      ? "bg-blue-600 text-white shadow-xs"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -260,9 +461,9 @@ export default function StudyPlanner() {
                 </button>
                 <button
                   onClick={() => setActiveTab("WEEK")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === "WEEK"
-                      ? "bg-purple-600 text-white shadow-xs"
+                      ? "bg-blue-600 text-white shadow-xs"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -270,9 +471,9 @@ export default function StudyPlanner() {
                 </button>
                 <button
                   onClick={() => setActiveTab("EXAMS")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                     activeTab === "EXAMS"
-                      ? "bg-purple-600 text-white shadow-xs"
+                      ? "bg-blue-600 text-white shadow-xs"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -301,12 +502,12 @@ export default function StudyPlanner() {
                       <div className="flex items-start gap-3.5 min-w-0">
                         <button
                           type="button"
-                          className="mt-0.5 text-purple-600 shrink-0"
+                          className="mt-0.5 text-blue-600 shrink-0"
                         >
                           {task.completed ? (
                             <CheckCircle2 size={18} className="text-emerald-600" />
                           ) : (
-                            <Circle size={18} className="text-slate-300 hover:text-purple-600" />
+                            <Circle size={18} className="text-slate-300 hover:text-blue-600" />
                           )}
                         </button>
 
@@ -359,7 +560,7 @@ export default function StudyPlanner() {
                         <h4 className="text-sm font-semibold text-slate-900">{exam.subject}</h4>
                         <p className="text-xs text-slate-500 mt-0.5">Exam Date: {exam.date}</p>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded text-xs font-mono font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                      <span className="px-2.5 py-0.5 rounded text-xs font-mono font-medium bg-blue-50 text-blue-700 border border-blue-100">
                         {exam.daysLeft} days left
                       </span>
                     </div>
@@ -367,11 +568,11 @@ export default function StudyPlanner() {
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Syllabus Covered</span>
-                        <span className="font-semibold text-purple-700">{exam.syllabusProgress}%</span>
+                        <span className="font-semibold text-blue-700">{exam.syllabusProgress}%</span>
                       </div>
                       <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-purple-600 rounded-full"
+                          className="h-full bg-blue-600 rounded-full"
                           style={{ width: `${exam.syllabusProgress}%` }}
                         />
                       </div>
@@ -387,11 +588,11 @@ export default function StudyPlanner() {
         <div className="space-y-6">
           {/* Deep Work Focus Timer */}
           <div className="app-card p-6 text-center space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-left">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                <Brain size={15} className="text-purple-600" /> Deep Work Timer
+                <Brain size={15} className="text-blue-600" /> Deep Work Timer
               </span>
-              <span className="text-[11px] font-mono font-medium px-2 py-0.5 bg-purple-50 text-purple-700 rounded border border-purple-100">
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 bg-blue-50 text-blue-700 rounded border border-blue-100">
                 Session {completedSessions}/4
               </span>
             </div>
@@ -400,7 +601,7 @@ export default function StudyPlanner() {
             <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
               <button
                 onClick={() => resetTimer("FOCUS")}
-                className={`py-1 rounded-lg transition-colors ${
+                className={`py-1 rounded-lg transition-colors cursor-pointer ${
                   timerMode === "FOCUS"
                     ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-500 hover:text-slate-900"
@@ -410,7 +611,7 @@ export default function StudyPlanner() {
               </button>
               <button
                 onClick={() => resetTimer("SHORT_BREAK")}
-                className={`py-1 rounded-lg transition-colors ${
+                className={`py-1 rounded-lg transition-colors cursor-pointer ${
                   timerMode === "SHORT_BREAK"
                     ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-500 hover:text-slate-900"
@@ -420,7 +621,7 @@ export default function StudyPlanner() {
               </button>
               <button
                 onClick={() => resetTimer("LONG_BREAK")}
-                className={`py-1 rounded-lg transition-colors ${
+                className={`py-1 rounded-lg transition-colors cursor-pointer ${
                   timerMode === "LONG_BREAK"
                     ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-500 hover:text-slate-900"
@@ -454,7 +655,7 @@ export default function StudyPlanner() {
 
               <button
                 onClick={() => resetTimer(timerMode)}
-                className="w-9 h-9 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
                 title="Reset timer"
               >
                 <RotateCcw size={15} />
@@ -462,14 +663,14 @@ export default function StudyPlanner() {
             </div>
           </div>
 
-          {/* AI Study Recommendations */}
+          {/* AI Study Recommendations - Connected directly to student profile context */}
           <div className="app-card p-5 space-y-2.5 bg-slate-50/50">
-            <div className="flex items-center gap-1.5 text-purple-700">
+            <div className="flex items-center gap-1.5 text-blue-700">
               <Sparkles size={15} />
-              <h4 className="text-xs font-semibold uppercase tracking-wider">AI Optimization</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider">AI Optimization Insights</h4>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Based on quiz results in <strong>Distributed Systems</strong>, reviewing <strong>Vector Timestamps</strong> today will yield the highest retention boost for mid-term assessments.
+              {getAiRecommendation()}
             </p>
           </div>
         </div>
@@ -483,23 +684,23 @@ export default function StudyPlanner() {
             <form onSubmit={handleAddTask} className="space-y-3.5">
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">Subject / Course</label>
-                <input
+                <input autoComplete="off"
                   required
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
                   placeholder="e.g. Data Structures or Machine Learning"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-purple-600 focus:bg-white"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">Target Topic</label>
-                <input
+                <input autoComplete="off"
                   required
                   value={newTopic}
                   onChange={(e) => setNewTopic(e.target.value)}
                   placeholder="e.g. Graph Traversal BFS/DFS Practice"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-purple-600 focus:bg-white"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
@@ -509,7 +710,7 @@ export default function StudyPlanner() {
                   <select
                     value={newDuration}
                     onChange={(e) => setNewDuration(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-purple-600 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   >
                     <option value="25">25 mins (1 Pomodoro)</option>
                     <option value="45">45 mins</option>
@@ -523,7 +724,7 @@ export default function StudyPlanner() {
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-purple-600 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   >
                     <option value="HIGH">High</option>
                     <option value="MEDIUM">Medium</option>
@@ -536,13 +737,13 @@ export default function StudyPlanner() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="btn-secondary text-xs py-2 px-3.5"
+                  className="btn-secondary text-xs py-2 px-3.5 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary text-xs py-2 px-4 shadow-xs"
+                  className="btn-primary text-xs py-2 px-4 shadow-xs cursor-pointer"
                 >
                   Save Study Block
                 </button>

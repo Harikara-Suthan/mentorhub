@@ -1,8 +1,78 @@
 import { prisma, Role } from "../config/prisma";
 import { hashPassword, comparePassword } from "../utils/password";
-import { signToken } from "../utils/jwt";
+import { signToken, JwtPayload } from "../utils/jwt";
 import { ApiError } from "../utils/ApiError";
+import crypto from "crypto";
 
+export async function forgotPassword(email: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) throw ApiError.notFound("User not found");
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 3600000); // 1 hour
+
+  await prisma.passwordResetToken.create({
+    data: { email, token, expiresAt },
+  });
+
+  // In a real app, send an email with the token here
+  console.log(`Password reset token for ${email}: ${token}`);
+  return { message: "If an account exists, a password reset link has been generated." };
+}
+
+export async function resetPassword(token: string, newPass: string) {
+  const resetToken = await prisma.passwordResetToken.findUnique({ where: { token } });
+  if (!resetToken || resetToken.expiresAt < new Date()) {
+    throw ApiError.badRequest("Invalid or expired token");
+  }
+
+  const passwordHash = await hashPassword(newPass);
+  await prisma.user.update({
+    where: { email: resetToken.email },
+    data: { passwordHash },
+  });
+
+  await prisma.passwordResetToken.delete({ where: { token } });
+  return { message: "Password updated successfully" };
+}
+
+export async function createUser(input: {
+  email: string;
+  role: Role;
+  fullName: string;
+  departmentId?: string;
+  employeeId?: string;
+}) {
+  const existing = await prisma.user.findUnique({ where: { email: input.email } });
+  if (existing) throw ApiError.conflict("An account with this email already exists");
+
+  // Temporary password until user sets their own
+  const passwordHash = await hashPassword("TemporaryPassword!123");
+
+  const user = await prisma.user.create({
+    data: {
+      email: input.email,
+      passwordHash,
+      role: input.role,
+    },
+  });
+
+  if (input.role === "MENTOR" || input.role === "HOD") {
+    if (!input.departmentId) {
+      throw ApiError.badRequest("departmentId is required for mentor/HOD accounts");
+    }
+    await prisma.mentor.create({
+      data: {
+        userId: user.id,
+        fullName: input.fullName,
+        employeeId: input.employeeId || "TEMP-" + user.id.slice(0, 5),
+        departmentId: input.departmentId,
+      },
+    });
+  }
+
+  return sanitizeUser(user);
+}
 export async function login(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.isActive) throw ApiError.unauthorized("Invalid email or password");
@@ -178,9 +248,34 @@ export async function updateOwnProfile(userId: string, role: string, data: Recor
   throw ApiError.badRequest("Unsupported role for profile update");
 }
 
-export async function listStaff(departmentId?: string) {
-  const where: Record<string, any> = {};
-  if (departmentId) where.departmentId = departmentId;
+export async function listStaff(user: JwtPayload, departmentId?: string) {
+  let where: Record<string, any> = {};
+  
+  if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden("No HOD profile found");
+    
+    where = {
+      OR: [
+        { departmentId: hod.departmentId },
+        { students: { some: { departmentId: hod.departmentId } } }
+      ]
+    };
+    
+    if (departmentId) {
+      // Ensure the requested department is the HOD's department, otherwise return empty or just scope it
+      where = {
+        AND: [
+          { departmentId },
+          where
+        ]
+      };
+    }
+  } else if (user.role === "MENTOR" || user.role === "STUDENT") {
+     throw ApiError.forbidden("Access denied");
+  } else {
+    if (departmentId) where.departmentId = departmentId;
+  }
 
   const staff = await prisma.mentor.findMany({
     where,

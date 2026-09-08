@@ -11,6 +11,8 @@ import Onboarding from "./pages/Onboarding";
 import MentorDashboard from "./pages/MentorDashboard";
 import HodDashboard from "./pages/HodDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
 import AiMentorChat from "./pages/AiMentorChat";
 import StudyPlanner from "./pages/StudyPlanner";
 import CareerGuidance from "./pages/CareerGuidance";
@@ -25,6 +27,26 @@ import Reports from "./pages/Reports";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+
+// Dedicated Domain Pages
+import Faculty from "./pages/Faculty";
+import MentorAssignments from "./pages/MentorAssignments";
+import Academics from "./pages/Academics";
+import Attendance from "./pages/Attendance";
+import Arrears from "./pages/Arrears";
+import RiskSuccess from "./pages/RiskSuccess";
+import MyMentor from "./pages/MyMentor";
+import NotFound from "./pages/NotFound";
+
+// Admin Management Pages
+import AdminHODs from "./pages/admin/AdminHODs";
+import AdminDepartments from "./pages/admin/AdminDepartments";
+import AdminPrograms from "./pages/admin/AdminPrograms";
+import AdminClasses from "./pages/admin/AdminClasses";
+import KnowledgeBase from "./pages/admin/KnowledgeBase";
+import RolesPermissions from "./pages/admin/RolesPermissions";
+import AuditLogs from "./pages/admin/AuditLogs";
+import SystemSettings from "./pages/admin/SystemSettings";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
@@ -41,6 +63,7 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 
 function RoleDashboard() {
   const { user } = useAuth();
+  if (user?.role === "ADMIN") return <AdminDashboard />;
   if (user?.role === "MENTOR") return <MentorDashboard />;
   if (user?.role === "HOD") return <HodDashboard />;
   return <StudentDashboard />;
@@ -65,24 +88,64 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          {/* Core Routes */}
           <Route path="/dashboard" element={<RoleDashboard />} />
-          <Route path="/ai-mentor" element={<AiMentorChat />} />
-          <Route path="/study-planner" element={<StudyPlanner />} />
-          <Route path="/career-guidance" element={<CareerGuidance />} />
-          <Route path="/skills" element={<SkillsMatrix />} />
-          <Route path="/progress" element={<StudentProgress />} />
           <Route path="/students" element={<Students />} />
           <Route path="/students/:id" element={<StudentProfile />} />
+          <Route path="/faculty" element={<Faculty />} />
+          <Route path="/mentor-assignments" element={<MentorAssignments />} />
+          <Route path="/academics" element={<Academics />} />
+          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/arrears" element={<Arrears />} />
+          <Route path="/risk" element={<RiskSuccess />} />
+
+          {/* Mentoring & Sessions (supports both /mentoring and /meetings) */}
+          <Route path="/mentoring" element={<Meetings />} />
           <Route path="/meetings" element={<Meetings />} />
-          <Route path="/issues" element={<Issues />} />
+
+          {/* Tasks & Actions (supports both /tasks and /actions) */}
+          <Route path="/tasks" element={<Actions />} />
           <Route path="/actions" element={<Actions />} />
-          <Route path="/messages" element={<Messages />} />
+
+          {/* AI Assistants (supports /ai-mentor, /ai-insights, /ai) */}
+          <Route path="/ai-mentor" element={<AiMentorChat />} />
+          <Route path="/ai-insights" element={<AiMentorChat />} />
+          <Route path="/ai" element={<AiMentorChat />} />
+
+          {/* Planning & Development */}
+          <Route path="/study-planner" element={<StudyPlanner />} />
+          <Route path="/career-guidance" element={<CareerGuidance />} />
+          <Route path="/career" element={<CareerGuidance />} />
+          <Route path="/skills" element={<SkillsMatrix />} />
+          <Route path="/student-insights" element={<StudentProgress />} />
+          <Route path="/progress" element={<StudentProgress />} />
+          <Route path="/my-mentor" element={<MyMentor />} />
+
+          {/* Operations & Communication */}
+          <Route path="/issues" element={<Issues />} />
           <Route path="/reports" element={<Reports />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/analytics" element={<Reports />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/profile" element={<Profile />} />
+
+          {/* Admin Routes */}
+          <Route path="/users" element={<AdminUsers />} />
+          <Route path="/hods" element={<AdminHODs />} />
+          <Route path="/departments" element={<AdminDepartments />} />
+          <Route path="/programs" element={<AdminPrograms />} />
+          <Route path="/classes" element={<AdminClasses />} />
+          <Route path="/knowledge-base" element={<KnowledgeBase />} />
+          <Route path="/roles" element={<RolesPermissions />} />
+          <Route path="/audit-logs" element={<AuditLogs />} />
+          <Route path="/settings" element={<SystemSettings />} />
+
+          {/* Root redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+          {/* Catch-all 404 Route */}
+          <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </>
   );

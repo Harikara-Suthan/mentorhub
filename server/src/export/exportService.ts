@@ -17,6 +17,7 @@ export async function exportStudentExcel(res: Response, report: any) {
   const fields: [string, unknown][] = [
     ["Name", report.fullName],
     ["Register Number", report.registerNumber],
+    ["Roll Number", report.rollNumber || "Not assigned"],
     ["Year", report.year],
     ["Section", report.section],
     ["Department", report.department?.name],
@@ -118,10 +119,13 @@ export function exportStudentPdf(res: Response, report: any) {
   pdfHeader(doc, "Student Mentoring Report", `Generated ${new Date().toLocaleDateString()}`);
 
   doc.fontSize(14).fillColor("#1B2A4A").text(report.fullName, { continued: false });
-  doc.fontSize(10).fillColor("#444444").text(`${report.registerNumber} | ${report.year} ${report.section} | ${report.department?.name ?? ""}`);
+  const rollText = report.rollNumber ? ` | Roll: ${report.rollNumber}` : "";
+  doc.fontSize(10).fillColor("#444444").text(`Reg: ${report.registerNumber}${rollText} | ${report.year} ${report.section} | ${report.department?.name ?? ""}`);
   doc.moveDown();
 
   addKeyValueTable(doc, [
+    ["Roll Number", report.rollNumber ?? "Not assigned"],
+    ["Register Number", report.registerNumber],
     ["Mentor", report.mentor?.fullName ?? "-"],
     ["Attendance", `${report.attendancePercentage}%`],
     ["CGPA", String(report.cgpa)],

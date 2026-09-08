@@ -32,21 +32,21 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF8FD] via-[#F5EEFB] to-white flex flex-col justify-between p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 via-white to-slate-50 flex flex-col justify-between p-4 md:p-8">
       {/* Top Header */}
       <div className="max-w-6xl w-full mx-auto flex items-center justify-between py-2">
         <MentorHubLogo size="md" animate />
         <div className="flex items-center gap-2.5">
           <button
             onClick={openIntro}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 hover:text-purple-800 px-3.5 py-2 rounded-xl bg-purple-100/70 hover:bg-purple-200/70 transition-colors border border-purple-200 cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors border border-blue-200 cursor-pointer"
           >
-            <Sparkles size={13} className="text-purple-600" />
+            <Sparkles size={13} className="text-blue-600" />
             <span>Platform Tour</span>
           </button>
           <Link
             to="/login"
-            className="text-xs font-bold text-slate-700 hover:text-purple-800 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 transition-colors border border-slate-200 shadow-2xs"
+            className="text-xs font-bold text-slate-700 hover:text-blue-800 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 transition-colors border border-slate-200 shadow-2xs"
           >
             Sign In →
           </Link>
@@ -56,14 +56,14 @@ export default function Onboarding() {
       {/* Main Hero Onboarding Container */}
       <div className="max-w-4xl w-full mx-auto my-auto py-8 text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
         {/* Toggle Mode Pills */}
-        <div className="inline-flex items-center p-1 rounded-2xl bg-purple-100/80 border border-purple-200 shadow-2xs">
+        <div className="inline-flex items-center p-1 rounded-2xl bg-blue-50 border border-blue-200 shadow-2xs">
           <button
             type="button"
             onClick={() => setViewMode("summary")}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               viewMode === "summary"
-                ? "bg-white text-purple-900 shadow-xs"
-                : "text-purple-700 hover:text-purple-950"
+                ? "bg-white text-blue-900 shadow-xs"
+                : "text-blue-700 hover:text-blue-950"
             }`}
           >
             <LayoutGrid size={13} />
@@ -74,8 +74,8 @@ export default function Onboarding() {
             onClick={() => setViewMode("architecture")}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               viewMode === "architecture"
-                ? "bg-purple-600 text-white shadow-xs"
-                : "text-purple-700 hover:text-purple-950"
+                ? "bg-blue-600 text-white shadow-xs"
+                : "text-blue-700 hover:text-blue-950"
             }`}
           >
             <Layers size={13} />
@@ -89,7 +89,7 @@ export default function Onboarding() {
             <div className="space-y-3">
               <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black text-navy tracking-tight leading-[1.1]">
                 Your Journey. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600">
                   Your Mentor.
                 </span>
               </h1>
@@ -110,9 +110,9 @@ export default function Onboarding() {
                 return (
                   <div
                     key={idx}
-                    className="app-card p-4 space-y-1.5 border-purple-100/80 hover:border-purple-300 transition-all bg-white"
+                    className="app-card p-4 space-y-1.5 border-blue-100/80 hover:border-blue-300 transition-all bg-white"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
                       <Icon size={16} />
                     </div>
                     <h4 className="font-bold text-xs text-navy">{item.title}</h4>
@@ -134,9 +134,9 @@ export default function Onboarding() {
 
               <button
                 onClick={() => setViewMode("architecture")}
-                className="w-full sm:w-auto btn-secondary text-sm py-3.5 px-6 border-purple-200 text-purple-800 bg-purple-50/70 hover:bg-purple-100 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer font-semibold"
+                className="w-full sm:w-auto btn-secondary text-sm py-3.5 px-6 border-blue-200 text-blue-800 bg-blue-50/70 hover:bg-blue-50 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer font-semibold"
               >
-                <Layers size={16} className="text-purple-600" />
+                <Layers size={16} className="text-blue-600" />
                 <span>Explore Value Proposition</span>
               </button>
 
@@ -149,7 +149,7 @@ export default function Onboarding() {
             </div>
           </div>
         ) : (
-          <div className="text-left animate-in fade-in duration-200 bg-white p-6 sm:p-8 rounded-3xl border border-purple-100 shadow-xl max-w-4xl mx-auto">
+          <div className="text-left animate-in fade-in duration-200 bg-white p-6 sm:p-8 rounded-3xl border border-blue-100 shadow-xl max-w-4xl mx-auto">
             <ProfessionalIntro
               variant="light"
               onSelectDemo={handleDemoLaunch}
@@ -163,7 +163,7 @@ export default function Onboarding() {
       {/* Footer */}
       <div className="max-w-6xl w-full mx-auto text-center py-4 border-t border-line/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-muted gap-2">
         <p>© 2026 MentorHUB. GUIDE • CONNECT • GROW.</p>
-        <p className="flex items-center gap-1 text-purple-700 font-medium">
+        <p className="flex items-center gap-1 text-blue-700 font-medium">
           <ShieldCheck size={14} /> Enterprise University Mentoring Standard
         </p>
       </div>

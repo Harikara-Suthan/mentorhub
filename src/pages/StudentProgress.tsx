@@ -40,20 +40,20 @@ export default function StudentProgress() {
   return (
     <div className="space-y-6 sm:space-y-7 animate-in fade-in duration-300">
       {/* Banner */}
-      <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-purple-950 text-white border border-purple-500/20 shadow-xs relative overflow-hidden">
+      <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-blue-950 text-white border border-blue-500/20 shadow-xs relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2.5 mb-2 flex-wrap">
               <BackButton fallback="/dashboard" />
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-purple-500/25 text-purple-200 border border-purple-400/30">
-                <Sparkles size={11} className="text-purple-300" /> Academic Telemetry Core
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-blue-500/25 text-blue-200 border border-blue-400/30">
+                <Sparkles size={11} className="text-sky-300" /> Academic Telemetry Core
               </span>
-              <span className="text-xs text-purple-200/70 font-medium">Verified Academic Ledger</span>
+              <span className="text-xs text-blue-200/70 font-medium">Verified Academic Ledger</span>
             </div>
             <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">
               Student Progress & Telemetry
             </h1>
-            <p className="text-xs md:text-sm text-purple-200/70 mt-1 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs md:text-sm text-blue-200/70 mt-1 max-w-xl font-normal leading-relaxed">
               Comprehensive academic GPA trajectory, attendance verification, skill growth, and career readiness.
             </p>
           </div>
@@ -114,7 +114,7 @@ export default function StudentProgress() {
               <h3 className="font-display text-sm sm:text-base font-bold text-slate-900">SGPA Progression Curve</h3>
               <p className="text-xs text-slate-400 mt-0.5">Semester-wise grade point average</p>
             </div>
-            <span className="text-xs font-mono font-medium text-purple-700 bg-purple-50 border border-purple-100 px-2.5 py-1 rounded-lg">
+            <span className="text-xs font-mono font-medium text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-lg">
               Consistent Upward Trend
             </span>
           </div>

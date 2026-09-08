@@ -3,6 +3,7 @@ import { z } from "zod";
 export const createStudentSchema = z.object({
   fullName: z.string().min(1),
   registerNumber: z.string().min(1),
+  rollNumber: z.string().optional().nullable(),
   year: z.string().min(1),
   section: z.string().min(1),
   departmentId: z.string().min(1),

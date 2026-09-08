@@ -20,12 +20,16 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <IntroProvider>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </IntroProvider>
       </AuthProvider>
     </BrowserRouter>

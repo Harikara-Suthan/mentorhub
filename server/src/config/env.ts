@@ -15,5 +15,6 @@ export const env = {
   aiModel: process.env.AI_MODEL || (process.env.GEMINI_API_KEY ? "gemini-3.5-flash" : "claude-3-5-sonnet-20241022"),
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? 900000),
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX ?? 500),
+  googleAllowedDomain: process.env.GOOGLE_ALLOWED_DOMAIN || "university.edu",
 };
 

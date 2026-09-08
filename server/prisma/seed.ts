@@ -89,10 +89,18 @@ async function main() {
     const cgpa = Number((randInt(50, 95) / 10).toFixed(1));
     const arrears = attendance < 75 ? randInt(1, 4) : randInt(0, 1);
 
+    const admYear = 2021 + (year === "IV" ? 0 : year === "III" ? 1 : year === "II" ? 2 : 3);
+    const yy = String(admYear).slice(-2);
+    const rollSeq = String((i % 25) + 1).padStart(2, "0");
+    const rollNumber = `${yy}${dept.code}${rollSeq}`;
+    const regSeq = String(1001 + i).slice(-3);
+    const registerNumber = `7240${yy}${dept.code === "CSE" ? "104" : "243"}${regSeq}`;
+
     const student = await prisma.student.create({
       data: {
         fullName: `${pick(FIRST_NAMES)} ${LAST}`,
-        registerNumber: `23${dept.code}${String(101 + i).padStart(3, "0")}`,
+        registerNumber,
+        rollNumber,
         year,
         section,
         departmentId: dept.id,
@@ -102,7 +110,7 @@ async function main() {
         email: `student${i + 1}@university.edu`,
         phone: `9${randInt(100000000, 999999999)}`,
         dateOfBirth: new Date(2003 + randInt(0, 3), randInt(0, 11), randInt(1, 28)),
-        admissionYear: 2022 + randInt(0, 3),
+        admissionYear: admYear,
         attendancePercentage: attendance,
         cgpa,
         arrearCount: arrears,

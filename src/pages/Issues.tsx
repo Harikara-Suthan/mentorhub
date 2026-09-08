@@ -86,6 +86,7 @@ export default function Issues() {
       i.description.toLowerCase().includes(q) ||
       i.student?.fullName?.toLowerCase().includes(q) ||
       i.student?.registerNumber?.toLowerCase().includes(q) ||
+      (i.student?.rollNumber && i.student.rollNumber.toLowerCase().includes(q)) ||
       i.category.toLowerCase().includes(q)
     );
   });
@@ -132,7 +133,7 @@ export default function Issues() {
       <div className="app-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white/90">
         <div className="relative flex-1 max-w-sm">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-muted" />
-          <input
+          <input autoComplete="off"
             value={filters.search}
             onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
             placeholder="Search by student, description, or topic..."
@@ -240,6 +241,11 @@ export default function Issues() {
                     >
                       {i.student.fullName}
                     </Link>
+                    {i.student.rollNumber && (
+                      <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        {i.student.rollNumber}
+                      </span>
+                    )}
                     <span className="font-mono text-xs text-slate-muted">
                       ({i.student.registerNumber})
                     </span>

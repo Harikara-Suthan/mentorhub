@@ -38,19 +38,19 @@ export function MentorHubEmblemSvg({
       height="100%"
     >
       <defs>
-        {/* Vibrant Gradient for M shape */}
+        {/* Vibrant Gradient for M shape - updated to light blue + blue */}
         <linearGradient id={mainGradId} x1="18" y1="20" x2="82" y2="82" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#C084FC" />
-          <stop offset="35%" stopColor="#A855F7" />
-          <stop offset="70%" stopColor="#7E22CE" />
-          <stop offset="100%" stopColor="#581C87" />
+          <stop offset="0%" stopColor="#93C5FD" />
+          <stop offset="35%" stopColor="#60A5FA" />
+          <stop offset="70%" stopColor="#2563EB" />
+          <stop offset="100%" stopColor="#1D4ED8" />
         </linearGradient>
 
-        {/* Head and Bust Figure Gradient */}
+        {/* Head and Bust Figure Gradient - updated to blue */}
         <linearGradient id={figGradId} x1="50" y1="16" x2="50" y2="52" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D8B4FE" />
-          <stop offset="45%" stopColor="#A855F7" />
-          <stop offset="100%" stopColor="#7E22CE" />
+          <stop offset="0%" stopColor="#BFDBFE" />
+          <stop offset="45%" stopColor="#3B82F6" />
+          <stop offset="100%" stopColor="#1D4ED8" />
         </linearGradient>
 
         {/* Top Edge Specular Lighting */}
@@ -150,13 +150,13 @@ export function MentorHubSquareBox({
   return (
     <div className={`relative shrink-0 flex items-center justify-center ${className}`}>
       {animate && (
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-indigo-600 opacity-50 blur-md animate-pulse pointer-events-none" />
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-600 opacity-50 blur-md animate-pulse pointer-events-none" />
       )}
       <div
-        className={`relative aspect-square flex items-center justify-center bg-gradient-to-b from-[#160E29] via-[#0D0818] to-[#06030B] border border-purple-500/40 shadow-xs ${boxSizes[size]}`}
+        className={`relative aspect-square flex items-center justify-center bg-gradient-to-b from-blue-50 via-white to-slate-50 border border-blue-300 shadow-xs ${boxSizes[size]}`}
       >
         {/* Subtle Inner Glow Rim */}
-        <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-purple-400/10 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-blue-400/10 to-transparent pointer-events-none" />
         <MentorHubEmblemSvg className="w-full h-full" />
       </div>
     </div>
@@ -221,8 +221,8 @@ export function MentorHubLogo({
             <span
               className={`font-display font-black ${s.hub} text-transparent bg-clip-text ${
                 isDark
-                  ? "bg-gradient-to-r from-[#C084FC] via-[#D8B4FE] to-white"
-                  : "bg-gradient-to-r from-[#7E22CE] via-[#9333EA] to-[#6B21A8]"
+                  ? "bg-gradient-to-r from-[#93C5FD] via-[#60A5FA] to-white"
+                  : "bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-[#1D4ED8]"
               }`}
             >
               HUB
@@ -233,10 +233,10 @@ export function MentorHubLogo({
           {showTagline && (
             <p
               className={`font-mono font-medium uppercase whitespace-nowrap leading-none mt-1 ${s.tag} ${
-                isDark ? "text-purple-300/80" : "text-[#0B0817]/75"
+                isDark ? "text-blue-300/80" : "text-[#0B0817]/75"
               }`}
             >
-              GUIDE <span className="text-purple-500 font-bold">•</span> CONNECT <span className="text-purple-500 font-bold">•</span> GROW
+              GUIDE <span className="text-blue-500 font-bold">•</span> CONNECT <span className="text-blue-500 font-bold">•</span> GROW
             </p>
           )}
         </div>
@@ -285,13 +285,13 @@ export function MentorHubSquareCard({
   return (
     <div className={`relative inline-flex items-center justify-center select-none ${className}`}>
       {animate && (
-        <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-indigo-600 opacity-40 blur-xl animate-pulse pointer-events-none" />
+        <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-600 opacity-40 blur-xl animate-pulse pointer-events-none" />
       )}
       <div
-        className={`relative aspect-square flex flex-col items-center justify-center text-center bg-[#07040E] border border-purple-500/30 shadow-2xl shadow-purple-950/60 ${cfg.box}`}
+        className={`relative aspect-square flex flex-col items-center justify-center text-center bg-[#071330] border border-blue-500/30 shadow-2xl shadow-blue-950/60 ${cfg.box}`}
       >
         {/* Subtle Ambient Radial Lighting */}
-        <div className="absolute inset-0 rounded-[inherit] bg-radial from-purple-900/20 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 rounded-[inherit] bg-radial from-blue-900/20 via-transparent to-transparent pointer-events-none" />
 
         {/* Center M Emblem */}
         <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mb-3">
@@ -303,14 +303,14 @@ export function MentorHubSquareCard({
           <span className={`font-display font-black ${cfg.title} text-white`}>
             Mentor
           </span>
-          <span className={`font-display font-black ${cfg.title} text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-purple-200`}>
+          <span className={`font-display font-black ${cfg.title} text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-400 to-blue-200`}>
             HUB
           </span>
         </div>
 
         {/* Tagline */}
-        <p className={`font-mono font-bold uppercase text-purple-200/80 ${cfg.tagline}`}>
-          GUIDE <span className="text-purple-400 font-black">.</span> CONNECT <span className="text-purple-400 font-black">.</span> GROW <span className="text-purple-400 font-black">.</span>
+        <p className={`font-mono font-bold uppercase text-blue-200/80 ${cfg.tagline}`}>
+          GUIDE <span className="text-blue-400 font-black">.</span> CONNECT <span className="text-blue-400 font-black">.</span> GROW <span className="text-blue-400 font-black">.</span>
         </p>
       </div>
     </div>

@@ -15,6 +15,7 @@ enum Role {
   HOD
   MENTOR
   STUDENT
+  ADMIN
 }
 
 enum MeetingType {
@@ -74,6 +75,13 @@ enum PlacementStatus {
   PLACED
 }
 
+enum FeeStatus {
+  PAID
+  PARTIALLY_PAID
+  PENDING
+  OVERDUE
+}
+
 enum InternshipStatus {
   NOT_STARTED
   IN_PROGRESS
@@ -102,6 +110,7 @@ model Department {
 
   mentors  Mentor[]
   students Student[]
+  whatsappGroups WhatsAppGroup[]
 }
 
 model User {
@@ -164,6 +173,7 @@ model Student {
 
   fullName             String
   registerNumber       String   @unique
+  rollNumber           String?  @unique
   admissionNumber      String?
   admissionYear        Int?
   academicYear         String?
@@ -225,10 +235,12 @@ model Student {
   actionItems          ActionItem[]
   riskAssessments      RiskAssessment[]
   interventions        Intervention[]
+  fees                 StudentFee[]
 
   @@index([mentorId])
   @@index([departmentId])
   @@index([registerNumber])
+  @@index([rollNumber])
 }
 
 model Meeting {
@@ -406,3 +418,56 @@ model Message {
   @@index([senderId])
   @@index([recipientId])
 }
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model WhatsAppGroup {
+  id           String   @id @default(cuid())
+  name         String
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  batch        String
+  section      String
+  createdAt    DateTime @default(now())
+
+  messages     WhatsAppMessage[]
+
+  @@unique([departmentId, batch, section])
+}
+
+model WhatsAppMessage {
+  id              String   @id @default(cuid())
+  groupId         String
+  group           WhatsAppGroup @relation(fields: [groupId], references: [id])
+  senderId        String
+  content         String
+  createdAt       DateTime @default(now())
+}
+
+model StudentFee {
+  id               String     @id @default(cuid())
+  studentId        String
+  student          Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear     String?
+  semester         Int?
+  feeCategory      String?    // e.g., "Tuition Fee", "Hostel & Mess", "Transport", "Composite Fee"
+  totalFees        Float      @default(0)
+  amountPaid       Float      @default(0)
+  status           FeeStatus  @default(PENDING)
+  dueDate          DateTime?
+  lastPaymentDate  DateTime?
+  paymentReference String?    // Transaction ID / Receipt No
+  remarks          String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([studentId])
+  @@index([status])
+}
+

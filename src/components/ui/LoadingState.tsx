@@ -19,20 +19,23 @@ export function Skeleton({ className = "" }: { className?: string }) {
 
 export function ErrorState({
   message,
+  error,
   onRetry,
 }: {
-  message: string;
+  message?: string;
+  error?: string;
   onRetry?: () => void;
 }) {
+  const displayMsg = message || error || "An unexpected error occurred.";
   return (
     <div className="app-card p-8 text-center border-rose-200 bg-rose-50/40">
       <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
         <AlertCircle size={22} />
       </div>
       <p className="text-base font-semibold text-rose-900 mb-1">Something went wrong</p>
-      <p className="text-sm text-rose-700 max-w-md mx-auto mb-4">{message}</p>
+      <p className="text-sm text-rose-700 max-w-md mx-auto mb-4">{displayMsg}</p>
       {onRetry && (
-        <button onClick={onRetry} className="btn-secondary text-xs border-rose-300 hover:bg-rose-100">
+        <button onClick={onRetry} className="btn-secondary text-xs border-rose-300 hover:bg-rose-100 cursor-pointer">
           Try Again
         </button>
       )}
@@ -43,23 +46,26 @@ export function ErrorState({
 export function EmptyState({
   title,
   hint,
+  description,
   icon,
   action,
 }: {
   title: string;
   hint?: string;
+  description?: string;
   icon?: React.ReactNode;
   action?: { label: string; onClick: () => void };
 }) {
+  const displayHint = hint || description;
   return (
     <div className="app-card p-12 text-center flex flex-col items-center justify-center border-dashed border-slate-200 bg-surface/30">
       <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-muted flex items-center justify-center mb-3.5">
         {icon || <Inbox size={26} className="text-slate-400" />}
       </div>
       <p className="font-display text-lg font-bold text-navy mb-1">{title}</p>
-      {hint && <p className="text-sm text-slate-muted max-w-sm mb-4 leading-relaxed">{hint}</p>}
+      {displayHint && <p className="text-sm text-slate-muted max-w-sm mb-4 leading-relaxed">{displayHint}</p>}
       {action && (
-        <button onClick={action.onClick} className="btn-primary text-xs">
+        <button onClick={action.onClick} className="btn-primary text-xs cursor-pointer">
           {action.label}
         </button>
       )}

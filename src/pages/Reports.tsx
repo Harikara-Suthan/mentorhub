@@ -65,7 +65,7 @@ export default function Reports() {
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Institutional Intelligence
             </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-100">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100">
               Audit & Compliance
             </span>
           </div>
@@ -182,7 +182,7 @@ export default function Reports() {
                 subtext="Tasks fulfilled on time"
               />
               <ReportMetric
-                icon={<Calendar size={16} className="text-purple-600" />}
+                icon={<Calendar size={16} className="text-blue-600" />}
                 label="Follow-ups Done"
                 value={monthly.followUpsCompleted}
                 subtext="Scheduled reviews held"

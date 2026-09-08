@@ -147,8 +147,8 @@ const DEMO_PERSONAS = [
     email: "hod@university.edu",
     desc: "Department Analytics, Mentor Allocation & NAAC Criteria Exports",
     icon: ShieldCheck,
-    badgeColor: "bg-purple-500/15 text-purple-300 border-purple-500/30",
-    buttonColor: "hover:bg-purple-950/40 border-purple-500/30",
+    badgeColor: "bg-blue-500/15 text-sky-300 border-blue-500/30",
+    buttonColor: "hover:bg-blue-950/40 border-blue-500/30",
   },
 ];
 
@@ -177,8 +177,8 @@ export function ProfessionalIntro({
       {/* 1. Header & Value Proposition Pitch */}
       <div className="space-y-4">
         {/* Subtle Institutional Tag */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-400/25 text-[11px] font-mono font-semibold tracking-wider text-purple-300">
-          <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/25 text-[11px] font-mono font-semibold tracking-wider text-sky-300">
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
           <span>ENTERPRISE ACADEMIC ADVISORY &amp; INTELLIGENCE</span>
         </div>
 
@@ -190,7 +190,7 @@ export function ProfessionalIntro({
             }`}
           >
             Intelligent Mentoring. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-indigo-300">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300">
               Proactive Academic Success.
             </span>
           </h2>
@@ -211,7 +211,7 @@ export function ProfessionalIntro({
         className={`rounded-2xl border p-4 sm:p-5 transition-all ${
           isDark
             ? "bg-white/[0.03] border-white/10 shadow-2xl backdrop-blur-md"
-            : "bg-white border-purple-100 shadow-md"
+            : "bg-white border-blue-100 shadow-md"
         }`}
       >
         {/* Feature Selector Tabs */}
@@ -226,13 +226,13 @@ export function ProfessionalIntro({
                 onClick={() => setActiveTab(pillar.id)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? "bg-purple-600 text-white shadow-xs font-bold"
+                    ? "bg-blue-600 text-white shadow-xs font-bold"
                     : isDark
                     ? "text-slate-400 hover:text-white hover:bg-white/[0.05]"
                     : "text-slate-600 hover:text-navy hover:bg-slate-100"
                 }`}
               >
-                <Icon size={14} className={isActive ? "text-white" : "text-purple-400"} />
+                <Icon size={14} className={isActive ? "text-white" : "text-sky-400"} />
                 <span>{pillar.title}</span>
               </button>
             );
@@ -251,11 +251,11 @@ export function ProfessionalIntro({
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold">
+                <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-sky-300 flex items-center justify-center font-bold">
                   <PillarIcon size={16} />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-purple-300 tracking-wider">
+                  <span className="text-[10px] font-mono font-bold text-sky-300 tracking-wider">
                     {selectedPillar.tag}
                   </span>
                   <h3
@@ -272,13 +272,13 @@ export function ProfessionalIntro({
                 <div
                   className={`hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl border ${
                     isDark
-                      ? "bg-purple-950/30 border-purple-500/30"
-                      : "bg-purple-50 border-purple-200"
+                      ? "bg-blue-950/30 border-blue-500/30"
+                      : "bg-blue-50 border-blue-200"
                   }`}
                 >
-                  <Zap size={14} className="text-purple-400" />
+                  <Zap size={14} className="text-sky-400" />
                   <div>
-                    <div className="text-[10px] font-mono text-purple-300 uppercase">
+                    <div className="text-[10px] font-mono text-sky-300 uppercase">
                       {selectedPillar.telemetrySnippet.label}
                     </div>
                     <div className="font-display font-black text-xs text-white">
@@ -308,7 +308,7 @@ export function ProfessionalIntro({
                       : "bg-slate-50 border-slate-100 text-slate-700"
                   }`}
                 >
-                  <CheckCircle2 size={13} className="text-purple-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 size={13} className="text-sky-400 shrink-0 mt-0.5" />
                   <span className="leading-snug">{point}</span>
                 </div>
               ))}
@@ -322,7 +322,7 @@ export function ProfessionalIntro({
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Sparkles size={13} className="text-purple-400" />
+              <Sparkles size={13} className="text-sky-400" />
               <span
                 className={`text-xs font-bold uppercase tracking-wider font-mono ${
                   isDark ? "text-white" : "text-navy"
@@ -335,7 +335,7 @@ export function ProfessionalIntro({
               <button
                 type="button"
                 onClick={onOpenTour}
-                className="text-[11px] font-semibold text-purple-300 hover:text-purple-200 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                className="text-[11px] font-semibold text-sky-300 hover:text-blue-200 inline-flex items-center gap-1 cursor-pointer transition-colors"
               >
                 <span>Full System Tour</span>
                 <ChevronRight size={12} />
@@ -353,8 +353,8 @@ export function ProfessionalIntro({
                   onClick={() => onSelectDemo(demo.email)}
                   className={`p-3 rounded-xl border text-left transition-all group cursor-pointer flex flex-col justify-between ${
                     isDark
-                      ? "bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-purple-400/40"
-                      : "bg-white hover:bg-purple-50/50 border-purple-100 hover:border-purple-300 shadow-2xs"
+                      ? "bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-blue-400/40"
+                      : "bg-white hover:bg-blue-50/50 border-blue-100 hover:border-blue-300 shadow-2xs"
                   }`}
                 >
                   <div>
@@ -366,11 +366,11 @@ export function ProfessionalIntro({
                       </span>
                       <ChevronRight
                         size={13}
-                        className="text-slate-500 group-hover:text-purple-300 group-hover:translate-x-0.5 transition-all"
+                        className="text-slate-500 group-hover:text-sky-300 group-hover:translate-x-0.5 transition-all"
                       />
                     </div>
                     <p
-                      className={`text-xs font-bold group-hover:text-purple-300 transition-colors ${
+                      className={`text-xs font-bold group-hover:text-sky-300 transition-colors ${
                         isDark ? "text-white" : "text-navy"
                       }`}
                     >
@@ -384,7 +384,7 @@ export function ProfessionalIntro({
                       {demo.desc}
                     </p>
                   </div>
-                  <span className="text-[10px] font-semibold text-purple-400 group-hover:text-purple-300 mt-2 flex items-center gap-1">
+                  <span className="text-[10px] font-semibold text-sky-400 group-hover:text-sky-300 mt-2 flex items-center gap-1">
                     <span>Log in as {demo.role}</span> →
                   </span>
                 </button>

@@ -30,6 +30,10 @@ export async function listMeetings(user: JwtPayload, filters: { studentId?: stri
     const student = await prisma.student.findUnique({ where: { userId: user.userId } });
     if (!student) throw ApiError.forbidden();
     where.studentId = student.id;
+  } else if (user.role === "HOD") {
+    const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!mentor) throw ApiError.forbidden("No HOD mentor profile found");
+    where.student = { departmentId: mentor.departmentId };
   }
   if (filters.studentId) where.studentId = filters.studentId;
 
@@ -39,7 +43,7 @@ export async function listMeetings(user: JwtPayload, filters: { studentId?: stri
   const [items, total] = await Promise.all([
     prisma.meeting.findMany({
       where,
-      include: { student: { select: { id: true, fullName: true, registerNumber: true } } },
+      include: { student: { select: { id: true, fullName: true, registerNumber: true, rollNumber: true } } },
       orderBy: { meetingDate: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -64,10 +68,14 @@ export async function getMeetingById(user: JwtPayload, meetingId: string) {
   if (user.role === "MENTOR") {
     const mentorId = await requireMentorId(user);
     if (meeting.mentorId !== mentorId) throw ApiError.forbidden();
-  }
-  if (user.role === "STUDENT") {
+  } else if (user.role === "STUDENT") {
     const student = await prisma.student.findUnique({ where: { userId: user.userId } });
     if (!student || meeting.studentId !== student.id) throw ApiError.forbidden();
+  } else if (user.role === "HOD") {
+    const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!mentor || meeting.student.departmentId !== mentor.departmentId) {
+      throw ApiError.forbidden("Access denied: meeting is outside your authorized department");
+    }
   }
   return meeting;
 }

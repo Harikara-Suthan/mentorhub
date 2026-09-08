@@ -17,14 +17,25 @@ export async function listActions(
     const student = await prisma.student.findUnique({ where: { userId: user.userId } });
     if (!student) throw ApiError.forbidden();
     where.studentId = student.id;
+  } else if (user.role === "HOD") {
+    const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!mentor) throw ApiError.forbidden("No HOD mentor profile found");
+    where.student = { departmentId: mentor.departmentId };
   }
 
   if (filters.studentId) where.studentId = filters.studentId;
-  if (filters.status) where.status = filters.status;
+  
+  if (filters.status) {
+    const norm = filters.status.toUpperCase();
+    const valid = ["PENDING", "IN_PROGRESS", "COMPLETED", "OVERDUE"];
+    if (valid.includes(norm)) {
+      where.status = norm as any;
+    }
+  }
 
   return prisma.actionItem.findMany({
     where,
-    include: { student: { select: { id: true, fullName: true, registerNumber: true } } },
+    include: { student: { select: { id: true, fullName: true, registerNumber: true, rollNumber: true } } },
     orderBy: { targetCompletionDate: "asc" },
   });
 }
@@ -55,7 +66,10 @@ export async function createAction(user: JwtPayload, req: Request, data: Record<
     const mentees = await prisma.student.findMany({ where: { mentorId } });
     targetStudentIds.push(...mentees.map((m: any) => m.id));
   } else if (data.targetType === "ALL_STUDENTS") {
-    const all = await prisma.student.findMany({});
+    const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    const all = await prisma.student.findMany({
+      where: user.role === "HOD" && mentor ? { departmentId: mentor.departmentId } : {}
+    });
     targetStudentIds.push(...all.map((m: any) => m.id));
   }
 
@@ -122,8 +136,6 @@ export async function updateAction(user: JwtPayload, req: Request, actionId: str
     const payload: Record<string, unknown> = {
       status: data.status || action.status,
     };
-    if (data.progress !== undefined) payload.progress = Math.max(0, Math.min(100, Number(data.progress)));
-    if (data.remarks !== undefined) payload.remarks = String(data.remarks);
     if (data.status === "COMPLETED") payload.completedDate = new Date();
 
     const updated = await prisma.actionItem.update({ where: { id: actionId }, data: payload });

@@ -31,7 +31,7 @@ const DEMO_USERS = [
     email: "hod@university.edu",
     role: "HOD",
     desc: "Department Head (All Dept Analytics)",
-    badge: "bg-purple-50 text-purple-700 border-purple-200",
+    badge: "bg-blue-50 text-blue-700 border-blue-200",
   },
   {
     name: "Dr. Priya Raman",
@@ -163,7 +163,7 @@ export function Header() {
             className="flex items-center gap-2 pl-3 pr-2.5 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/90 rounded-xl border border-slate-200/80 text-slate-400 hover:text-slate-600 transition-all cursor-pointer shadow-2xs group"
             aria-label="Open search layer"
           >
-            <Search size={14} className="text-slate-400 group-hover:text-purple-600 transition-colors shrink-0" />
+            <Search size={14} className="text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" />
             <span className="font-medium text-slate-500">Search students, reg. no, records...</span>
             <kbd className="font-mono text-[10px] text-slate-400 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-2xs ml-1 shrink-0">
               ⌘K
@@ -178,7 +178,7 @@ export function Header() {
             <button
               onClick={() => setIsSearchLayerOpen(true)}
               id="header_search_btn"
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-purple-700 hover:border-purple-200/80 border border-transparent transition-all shrink-0 cursor-pointer active:scale-95"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-blue-700 hover:border-blue-200/80 border border-transparent transition-all shrink-0 cursor-pointer active:scale-95"
               aria-label="Open Search Layer"
               title="Search students & records (⌘K)"
             >
@@ -193,7 +193,7 @@ export function Header() {
               className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
               title="Fast switch between demo roles"
             >
-              <UserCheck size={13} className="text-purple-600" />
+              <UserCheck size={13} className="text-blue-600" />
               <span className="truncate max-w-[85px]">{user?.role}</span>
               <ChevronDown size={12} className="text-slate-400" />
             </button>
@@ -212,7 +212,7 @@ export function Header() {
                         key={demo.email}
                         onClick={() => handleSwitchUser(demo.email)}
                         className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                          isCurrent ? "bg-purple-50 font-semibold text-purple-900" : "hover:bg-slate-50 text-slate-700"
+                          isCurrent ? "bg-blue-50 font-semibold text-blue-900" : "hover:bg-slate-50 text-slate-700"
                         }`}
                       >
                         <div>
@@ -224,7 +224,7 @@ export function Header() {
                           </div>
                           <p className="text-[10px] text-slate-500 mt-0.5">{demo.desc}</p>
                         </div>
-                        {isCurrent && <CheckCircle2 size={14} className="text-purple-600 shrink-0" />}
+                        {isCurrent && <CheckCircle2 size={14} className="text-blue-600 shrink-0" />}
                       </button>
                     );
                   })}
@@ -237,11 +237,11 @@ export function Header() {
           <button
             onClick={openIntro}
             id="header_platform_tour_btn"
-            className="hidden xl:inline-flex items-center gap-1.5 h-9 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200/80 text-xs font-semibold transition-all cursor-pointer shadow-2xs shrink-0"
+            className="hidden xl:inline-flex items-center gap-1.5 h-9 px-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 text-xs font-semibold transition-all cursor-pointer shadow-2xs shrink-0"
             title="Explore MentorHUB Platform Tour & Architecture"
             aria-label="Platform Tour"
           >
-            <Sparkles size={14} className="text-purple-600 shrink-0" />
+            <Sparkles size={14} className="text-blue-600 shrink-0" />
             <span>Tour</span>
           </button>
 
@@ -267,7 +267,7 @@ export function Header() {
             >
               <Bell size={18} />
               {notifications.length > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-purple-600 ring-2 ring-white" />
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white" />
               )}
             </button>
 
@@ -277,13 +277,13 @@ export function Header() {
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-semibold text-slate-900">Notifications</p>
                     {notifications.length > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
                         {notifications.length}
                       </span>
                     )}
                   </div>
                   {notifications.length > 0 && (
-                    <button onClick={markAllRead} className="text-xs font-medium text-purple-600 hover:underline cursor-pointer">
+                    <button onClick={markAllRead} className="text-xs font-medium text-blue-600 hover:underline cursor-pointer">
                       Mark all read
                     </button>
                   )}
@@ -311,7 +311,7 @@ export function Header() {
                   <Link
                     to="/notifications"
                     onClick={() => setOpen(false)}
-                    className="text-xs font-semibold text-purple-600 hover:text-purple-700"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700"
                   >
                     View All Notifications →
                   </Link>
@@ -365,32 +365,14 @@ export function Header() {
                     onClick={() => setProfileOpen(false)}
                     className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
                   >
-                    <User size={14} className="text-purple-600" /> My Profile
+                    <User size={14} className="text-blue-600" /> My Profile
                   </Link>
-                  <button
-                    onClick={() => {
-                      setProfileOpen(false);
-                      openIntro();
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
-                  >
-                    <Sparkles size={14} className="text-purple-600" /> Platform Tour & Intro
-                  </button>
-                  <button
-                    onClick={() => {
-                      setProfileOpen(false);
-                      setSwitchOpen(true);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
-                  >
-                    <UserCheck size={14} className="text-purple-600" /> Switch Persona
-                  </button>
                   <Link
                     to="/dashboard"
                     onClick={() => setProfileOpen(false)}
                     className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
                   >
-                    <GraduationCap size={14} className="text-purple-600" /> My Dashboard
+                    <GraduationCap size={14} className="text-blue-600" /> My Dashboard
                   </Link>
                   <div className="my-1 border-t border-slate-100" />
                   <button
@@ -409,21 +391,21 @@ export function Header() {
       {/* Interactive Global Search Layer Modal */}
       {isSearchLayerOpen && (
         <div
-          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-start justify-center p-3 sm:p-4 md:p-6 pt-12 sm:pt-20 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-start justify-center p-3 sm:p-4 md:p-6 pt-12 sm:pt-20 animate-in fade-in duration-150"
           onClick={() => setIsSearchLayerOpen(false)}
         >
           <div
-            className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150"
+            className="w-full max-w-xl bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Search Input Bar */}
-            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-200/90 bg-slate-50/70">
-              <Search size={18} className="text-purple-600 shrink-0" />
-              <input
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+              <Search size={18} className="text-blue-600 shrink-0" />
+              <input autoComplete="off"
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search students, reg. number, department, email..."
+                placeholder="Search students, register number, email..."
                 className="w-full text-sm bg-transparent border-none focus:outline-none text-slate-900 placeholder:text-slate-400 font-medium"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && searchQuery.trim()) {
@@ -439,7 +421,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 cursor-pointer shrink-0"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/40 cursor-pointer shrink-0"
                   aria-label="Clear query"
                 >
                   <X size={15} />
@@ -448,7 +430,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setIsSearchLayerOpen(false)}
-                className="px-2 py-1 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-800 bg-slate-200/60 hover:bg-slate-200 transition-colors cursor-pointer shrink-0 flex items-center gap-1"
+                className="px-2 py-1 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-800 bg-slate-200/40 hover:bg-slate-200/60 transition-colors cursor-pointer shrink-0 flex items-center gap-1"
                 aria-label="Close search layer"
               >
                 <kbd className="font-mono text-[10px]">ESC</kbd>
@@ -456,56 +438,27 @@ export function Header() {
               </button>
             </div>
 
-            {/* Results or Quick Links */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-3">
-              {/* Category Quick Filter Chips */}
-              <div className="flex items-center gap-1.5 pb-1 overflow-x-auto text-[11px] shrink-0">
-                <span className="text-slate-400 font-medium pl-1 pr-0.5">Filter:</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-semibold border border-purple-200/80">
-                  All Records
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSearchLayerOpen(false);
-                    navigate("/students");
-                  }}
-                  className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium hover:bg-slate-200/70 cursor-pointer"
-                >
-                  Students
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSearchLayerOpen(false);
-                    navigate("/meetings");
-                  }}
-                  className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium hover:bg-slate-200/70 cursor-pointer"
-                >
-                  Advisory Notes
-                </button>
-              </div>
-
-              {/* Active Search Results */}
+            {/* Results only */}
+            <div className="flex-1 overflow-y-auto p-3">
               {searchQuery.trim().length >= 2 ? (
                 <div>
-                  <div className="px-2 py-1 flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <div className="px-2 py-1 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
                     <span>Matching Students</span>
-                    {isSearching && <span className="text-purple-600 font-normal normal-case">Searching...</span>}
+                    {isSearching && <span className="text-blue-600 font-normal normal-case animate-pulse">Searching...</span>}
                   </div>
 
                   {searchResults.length === 0 && !isSearching ? (
                     <div className="py-8 text-center">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-2 text-slate-400">
-                        <Search size={18} />
+                      <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-2 text-slate-400">
+                        <Search size={18} className="text-slate-300" />
                       </div>
-                      <p className="text-sm font-medium text-slate-700">No students found</p>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        No students match "{searchQuery}". Try searching by name or register number.
+                      <p className="text-xs font-semibold text-slate-700">No students found</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        No students match "{searchQuery}".
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-1 mt-1">
+                    <div className="space-y-1">
                       {searchResults.map((s) => (
                         <button
                           key={s.id}
@@ -514,118 +467,38 @@ export function Header() {
                             setSearchQuery("");
                             navigate(`/students/${s.id}`);
                           }}
-                          className="w-full text-left p-2.5 rounded-xl hover:bg-slate-100/80 flex items-center justify-between group transition-all border border-transparent hover:border-slate-200/80 cursor-pointer"
+                          className="w-full text-left p-2.5 rounded-lg hover:bg-slate-50 flex items-center justify-between group transition-all border border-transparent hover:border-slate-100 cursor-pointer"
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-700 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
                               {s.fullName[0]}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold text-slate-900 truncate group-hover:text-purple-700">
+                              <p className="text-xs font-semibold text-slate-950 truncate group-hover:text-blue-600">
                                 {s.fullName}
                               </p>
-                              <p className="text-[11px] text-slate-500 font-mono truncate">
-                                {s.registerNumber}
+                              <p className="text-[10px] text-slate-500 font-mono truncate">
+                                {s.rollNumber ? `${s.rollNumber} • ` : ""}Reg: {s.registerNumber}
                                 {s.department?.name ? ` · ${s.department.name}` : ""} · Year {s.year} ({s.section})
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2.5 shrink-0">
+                          <div className="flex items-center gap-2 shrink-0">
                             {s.latestRisk && <RiskDot level={s.latestRisk.riskLevel} compact />}
-                            <span className="text-[11px] font-medium text-purple-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
-                              View Profile <ArrowRight size={12} />
+                            <span className="text-[11px] font-semibold text-blue-600 flex items-center gap-1 opacity-80 group-hover:opacity-100">
+                              View <ArrowRight size={12} />
                             </span>
                           </div>
                         </button>
                       ))}
-
-                      <div className="pt-2 border-t border-slate-100 mt-2">
-                        <button
-                          onClick={() => {
-                            setIsSearchLayerOpen(false);
-                            navigate(`/students?search=${encodeURIComponent(searchQuery)}`);
-                          }}
-                          className="w-full py-2 px-3 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors text-center cursor-pointer"
-                        >
-                          View all results in Mentee Directory →
-                        </button>
-                      </div>
                     </div>
                   )}
                 </div>
               ) : (
-                /* Empty query state: Quick actions & common links */
-                <div className="space-y-3 pt-1">
-                  <div>
-                    <p className="px-2 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                      Quick Platform Destinations
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
-                      <button
-                        onClick={() => {
-                          setIsSearchLayerOpen(false);
-                          navigate("/students");
-                        }}
-                        className="p-2.5 rounded-xl border border-slate-200/80 hover:border-purple-300 hover:bg-purple-50/50 text-left transition-all group cursor-pointer"
-                      >
-                        <p className="text-xs font-semibold text-slate-800 group-hover:text-purple-700">
-                          Mentee Directory
-                        </p>
-                        <p className="text-[11px] text-slate-500">All assigned student records</p>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsSearchLayerOpen(false);
-                          navigate("/meetings");
-                        }}
-                        className="p-2.5 rounded-xl border border-slate-200/80 hover:border-purple-300 hover:bg-purple-50/50 text-left transition-all group cursor-pointer"
-                      >
-                        <p className="text-xs font-semibold text-slate-800 group-hover:text-purple-700">
-                          Advisory Meetings
-                        </p>
-                        <p className="text-[11px] text-slate-500">Log or schedule a session</p>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsSearchLayerOpen(false);
-                          navigate("/ai-mentor");
-                        }}
-                        className="p-2.5 rounded-xl border border-slate-200/80 hover:border-purple-300 hover:bg-purple-50/50 text-left transition-all group cursor-pointer"
-                      >
-                        <p className="text-xs font-semibold text-slate-800 group-hover:text-purple-700">
-                          AI Mentor Assistant
-                        </p>
-                        <p className="text-[11px] text-slate-500">Ask academic & career insights</p>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsSearchLayerOpen(false);
-                          navigate("/actions");
-                        }}
-                        className="p-2.5 rounded-xl border border-slate-200/80 hover:border-purple-300 hover:bg-purple-50/50 text-left transition-all group cursor-pointer"
-                      >
-                        <p className="text-xs font-semibold text-slate-800 group-hover:text-purple-700">
-                          Tasks & Actions
-                        </p>
-                        <p className="text-[11px] text-slate-500">Follow-up checklist</p>
-                      </button>
-                    </div>
-                  </div>
+                <div className="py-12 text-center text-xs text-slate-400 font-medium">
+                  Type name, roll number (e.g. 24AIDS01), register number, or email to search directory...
                 </div>
               )}
-            </div>
-
-            {/* Bottom Keyboard Hint Footer */}
-            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-400">
-              <div className="flex items-center gap-3">
-                <span>
-                  Press <kbd className="font-mono bg-white border border-slate-200 px-1 py-0.5 rounded text-slate-600">↵ Enter</kbd> to search directory
-                </span>
-                <span>
-                  <kbd className="font-mono bg-white border border-slate-200 px-1 py-0.5 rounded text-slate-600">ESC</kbd> to close
-                </span>
-              </div>
-              <span className="text-purple-600 font-medium hidden sm:inline">MentorHUB Instant Search</span>
             </div>
           </div>
         </div>

@@ -31,16 +31,41 @@ export async function listIssues(
     if (!student) throw ApiError.forbidden();
     where.studentId = student.id;
     where.isRestricted = false; // students never see restricted well-being issues
+  } else if (user.role === "HOD") {
+    const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!mentor) throw ApiError.forbidden("No HOD mentor profile found");
+    where.student = { departmentId: mentor.departmentId };
   }
 
   if (filters.studentId) where.studentId = filters.studentId;
-  if (filters.category) where.category = filters.category;
-  if (filters.severity) where.severity = filters.severity;
-  if (filters.status) where.status = filters.status;
+  
+  if (filters.category) {
+    const norm = filters.category.toUpperCase();
+    const valid = ["ACADEMIC_PERFORMANCE", "ATTENDANCE", "ARREAR_SUBJECTS", "PLACEMENT_READINESS", "INTERNSHIP_STATUS", "FINANCIAL_CONCERNS", "PERSONAL_WELLBEING", "DISCIPLINE", "OTHER"];
+    if (valid.includes(norm)) {
+      where.category = norm as any;
+    }
+  }
+
+  if (filters.severity) {
+    const norm = filters.severity.toUpperCase();
+    const valid = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+    if (valid.includes(norm)) {
+      where.severity = norm as any;
+    }
+  }
+
+  if (filters.status) {
+    const norm = filters.status.toUpperCase();
+    const valid = ["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+    if (valid.includes(norm)) {
+      where.status = norm as any;
+    }
+  }
 
   const issues = await prisma.studentIssue.findMany({
     where,
-    include: { student: { select: { id: true, fullName: true, registerNumber: true } } },
+    include: { student: { select: { id: true, fullName: true, registerNumber: true, rollNumber: true } } },
     orderBy: { createdAt: "desc" },
   });
 

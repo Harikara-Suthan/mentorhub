@@ -129,7 +129,7 @@ export default function Notifications() {
           {(user?.role === "MENTOR" || user?.role === "HOD") && (
             <button
               onClick={() => setShowBroadcastModal(true)}
-              className="text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-xs cursor-pointer"
+              className="text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-xs cursor-pointer"
             >
               <Megaphone size={14} /> Send Announcement
             </button>
@@ -138,7 +138,7 @@ export default function Notifications() {
           {unreadCount > 0 && (
             <button
               onClick={markAllRead}
-              className="text-xs font-semibold text-purple-700 hover:text-purple-800 transition-colors flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100/70 px-3 py-1.5 rounded-xl border border-purple-200 cursor-pointer"
+              className="text-xs font-semibold text-blue-700 hover:text-blue-800 transition-colors flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100/70 px-3 py-1.5 rounded-xl border border-blue-200 cursor-pointer"
             >
               <CheckCheck size={14} /> Mark all read
             </button>
@@ -151,7 +151,7 @@ export default function Notifications() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md shadow-xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-purple-600 font-display font-bold text-base">
+              <div className="flex items-center gap-2 text-blue-600 font-display font-bold text-base">
                 <Megaphone size={18} />
                 <span>Broadcast Announcement</span>
               </div>
@@ -175,7 +175,7 @@ export default function Notifications() {
                 <select
                   value={recipientType}
                   onChange={(e) => setRecipientType(e.target.value as any)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-500 font-medium"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 font-medium"
                 >
                   <option value="MY_MENTEES">Assigned Mentees Cohort</option>
                   {user?.role === "HOD" && <option value="ALL_STUDENTS">Entire Department Students</option>}
@@ -185,24 +185,24 @@ export default function Notifications() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Announcement Subject</label>
-                <input
+                <input autoComplete="off"
                   required
                   placeholder="e.g. Mandatory 1:1 Review Session, Resume Deadline"
                   value={broadcastTitle}
                   onChange={(e) => setBroadcastTitle(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-500 font-medium"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 font-medium"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Notification Message</label>
-                <textarea
+                <textarea autoComplete="off"
                   required
                   rows={3}
                   placeholder="Details of the announcement, upcoming deadlines, or actionable instructions..."
                   value={broadcastMessage}
                   onChange={(e) => setBroadcastMessage(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-500 font-medium"
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 font-medium"
                 />
               </div>
 
@@ -217,7 +217,7 @@ export default function Notifications() {
                 <button
                   type="submit"
                   disabled={sendingBroadcast}
-                  className="px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl shadow-xs disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs disabled:opacity-50 flex items-center gap-1.5"
                 >
                   <Send size={13} />
                   <span>{sendingBroadcast ? "Broadcasting..." : "Send Announcement"}</span>

@@ -106,20 +106,20 @@ export default function SkillsMatrix() {
   return (
     <div className="space-y-6 sm:space-y-7 animate-in fade-in duration-300">
       {/* Banner */}
-      <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-purple-950 text-white border border-purple-500/20 shadow-xs relative overflow-hidden">
+      <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-blue-950 text-white border border-blue-500/20 shadow-xs relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2.5 mb-2 flex-wrap">
               <BackButton fallback="/dashboard" />
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-purple-500/25 text-purple-200 border border-purple-400/30">
-                <Sparkles size={11} className="text-purple-300" /> Skill Competency Engine
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase bg-blue-500/25 text-blue-200 border border-blue-400/30">
+                <Sparkles size={11} className="text-sky-300" /> Skill Competency Engine
               </span>
-              <span className="text-xs text-purple-200/70 font-medium">Verified Competencies</span>
+              <span className="text-xs text-blue-200/70 font-medium">Verified Competencies</span>
             </div>
             <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">
               Skill Development Matrix
             </h1>
-            <p className="text-xs md:text-sm text-purple-200/70 mt-1 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs md:text-sm text-blue-200/70 mt-1 max-w-xl font-normal leading-relaxed">
               Track technical benchmarks, verified credentials, and AI-recommended skill expansion trees.
             </p>
           </div>
@@ -150,7 +150,7 @@ export default function SkillsMatrix() {
             onClick={() => setActiveCategory(tab.id)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-all cursor-pointer ${
               activeCategory === tab.id
-                ? "bg-purple-600 text-white shadow-xs"
+                ? "bg-blue-600 text-white shadow-xs"
                 : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
             }`}
           >
@@ -164,10 +164,10 @@ export default function SkillsMatrix() {
         {filteredSkills.map((sk) => (
           <div
             key={sk.id}
-            className="app-card p-5 space-y-4 hover:border-purple-300 transition-all group"
+            className="app-card p-5 space-y-4 hover:border-blue-300 transition-all group"
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold shrink-0 border border-purple-100">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold shrink-0 border border-blue-100">
                 <Code2 size={20} />
               </div>
               <div className="flex items-center gap-1.5">
@@ -184,7 +184,7 @@ export default function SkillsMatrix() {
             </div>
 
             <div>
-              <h3 className="font-display text-sm font-bold text-slate-900 group-hover:text-purple-600 transition-colors">
+              <h3 className="font-display text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
                 {sk.name}
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -195,11 +195,11 @@ export default function SkillsMatrix() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-medium">Mastery</span>
-                <span className="font-semibold text-purple-700">{sk.progress}% ({sk.level})</span>
+                <span className="font-semibold text-blue-700">{sk.progress}% ({sk.level})</span>
               </div>
               <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-purple-600 rounded-full transition-all duration-500"
+                  className="h-full bg-blue-600 rounded-full transition-all duration-500"
                   style={{ width: `${sk.progress}%` }}
                 />
               </div>
@@ -217,7 +217,7 @@ export default function SkillsMatrix() {
                     )
                   );
                 }}
-                className="text-purple-600 hover:text-purple-700 font-semibold cursor-pointer"
+                className="text-blue-600 hover:text-blue-700 font-semibold cursor-pointer"
               >
                 + Log Practice
               </button>

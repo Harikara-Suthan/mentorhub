@@ -175,18 +175,18 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-purple-100 overflow-hidden z-10 flex flex-col my-auto max-h-[92vh]"
+        className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden z-10 flex flex-col my-auto max-h-[92vh]"
       >
         {/* Top Header Bar */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-purple-50/70 via-white to-indigo-50/50">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50/70 via-white to-indigo-50/50">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#0F172A] p-1.5 flex items-center justify-center shadow-xs border border-purple-500/30">
+            <div className="w-9 h-9 rounded-xl bg-[#0F172A] p-1.5 flex items-center justify-center shadow-xs border border-blue-500/30">
               <MentorHubEmblemSvg className="w-full h-full" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-display font-black text-base text-navy tracking-tight">MentorHUB</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold border border-purple-200">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold border border-blue-200">
                   PLATFORM OVERVIEW
                 </span>
               </div>
@@ -214,14 +214,14 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
                 onClick={() => setCurrentStep(idx)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? "bg-purple-600 text-white shadow-xs"
+                    ? "bg-blue-600 text-white shadow-xs"
                     : isCompleted
-                    ? "bg-purple-50 text-purple-700 hover:bg-purple-100"
+                    ? "bg-blue-50 text-blue-700 hover:bg-blue-100"
                     : "bg-white text-slate-500 hover:bg-slate-100 border border-slate-200/80"
                 }`}
               >
                 <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                  isActive ? "bg-white/20 text-white" : isCompleted ? "bg-purple-200 text-purple-800" : "bg-slate-100 text-slate-600"
+                  isActive ? "bg-white/20 text-white" : isCompleted ? "bg-blue-200 text-blue-800" : "bg-slate-100 text-slate-600"
                 }`}>
                   {idx + 1}
                 </span>
@@ -236,8 +236,8 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
           {/* Step Heading */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-purple-600" />
-              <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-purple-700">
+              <Sparkles size={14} className="text-blue-600" />
+              <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-blue-700">
                 {stepMeta.badge}
               </span>
             </div>
@@ -254,8 +254,8 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* 3 Core Pillars */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                <div className="p-4 rounded-2xl bg-gradient-to-b from-purple-50/80 to-white border border-purple-100/90 space-y-2">
-                  <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                <div className="p-4 rounded-2xl bg-gradient-to-b from-blue-50/80 to-white border border-blue-100/90 space-y-2">
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
                     <Activity size={17} />
                   </div>
                   <h4 className="font-bold text-xs text-navy">Real-Time Telemetry</h4>
@@ -288,7 +288,7 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
               {/* Institutional Stats Banner */}
               <div className="p-4 rounded-2xl bg-[#0F172A] text-white flex flex-wrap items-center justify-between gap-4 border border-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center text-sky-300">
                     <ShieldCheck size={20} />
                   </div>
                   <div>
@@ -299,7 +299,7 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
 
                 <div className="flex items-center gap-6 text-center">
                   <div>
-                    <p className="font-display font-black text-lg text-purple-300">50+</p>
+                    <p className="font-display font-black text-lg text-sky-300">50+</p>
                     <p className="text-[10px] text-slate-400 font-mono">STUDENT TELEMETRY</p>
                   </div>
                   <div>
@@ -319,15 +319,15 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
           {currentStep === 1 && (
             <div className="space-y-3 animate-in fade-in duration-200">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="p-4 rounded-2xl border border-purple-100 bg-purple-50/30 space-y-2 hover:border-purple-300 transition-colors">
-                  <div className="flex items-center gap-2 text-purple-700">
+                <div className="p-4 rounded-2xl border border-blue-100 bg-blue-50/30 space-y-2 hover:border-blue-300 transition-colors">
+                  <div className="flex items-center gap-2 text-blue-700">
                     <Bot size={18} />
                     <h4 className="font-bold text-xs text-navy">Conversational AI Mentor</h4>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
                     Understands student academic context (CGPA, active courses, mentor details). Responds natively in English, Tamil, and conversational Tanglish with emotional empathy.
                   </p>
-                  <div className="text-[10px] font-mono text-purple-700 bg-purple-100/70 p-2 rounded-xl">
+                  <div className="text-[10px] font-mono text-blue-700 bg-blue-100/70 p-2 rounded-xl">
                     "enna panrathu?" → "First-u tension aagadha! Enna problem nu sollu, let's sort it out."
                   </div>
                 </div>
@@ -392,7 +392,7 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
                           : "text-slate-600 hover:text-navy hover:bg-white/50"
                       }`}
                     >
-                      <Icon size={14} className={isSelected ? "text-purple-600" : "text-slate-400"} />
+                      <Icon size={14} className={isSelected ? "text-blue-600" : "text-slate-400"} />
                       <span>{r.role}</span>
                     </button>
                   );
@@ -404,15 +404,15 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
                 const role = ROLES_INFO[selectedRoleTab];
                 const Icon = role.icon;
                 return (
-                  <div className="p-5 rounded-2xl border border-purple-100 bg-gradient-to-b from-purple-50/40 via-white to-slate-50/30 space-y-4">
+                  <div className="p-5 rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50/40 via-white to-slate-50/30 space-y-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-black text-base shadow-sm">
+                        <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-base shadow-sm">
                           <Icon size={22} />
                         </div>
                         <div>
                           <h3 className="font-display font-black text-sm text-navy">{role.title}</h3>
-                          <p className="text-xs text-purple-700 font-medium">{role.tagline}</p>
+                          <p className="text-xs text-blue-700 font-medium">{role.tagline}</p>
                           <p className="text-[11px] text-slate-500 font-mono mt-0.5">Demo User: {role.name} ({role.email})</p>
                         </div>
                       </div>
@@ -426,10 +426,10 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-purple-100/70">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-blue-100/70">
                       {role.features.map((f, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200/70">
-                          <CheckCircle2 size={15} className="text-purple-600 shrink-0 mt-0.5" />
+                          <CheckCircle2 size={15} className="text-blue-600 shrink-0 mt-0.5" />
                           <span>{f}</span>
                         </div>
                       ))}
@@ -456,13 +456,13 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
                       key={demo.email}
                       className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
                         isCurrent
-                          ? "border-purple-500 bg-purple-50/50 shadow-sm"
-                          : "border-slate-200/80 bg-white hover:border-purple-300 hover:shadow-xs"
+                          ? "border-blue-500 bg-blue-50/50 shadow-sm"
+                          : "border-slate-200/80 bg-white hover:border-blue-300 hover:shadow-xs"
                       }`}
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                          <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
                             <Icon size={16} />
                           </div>
                           <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
@@ -490,8 +490,8 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
               </div>
 
               {/* Tips banner */}
-              <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200/70 flex items-center gap-2.5 text-xs text-purple-900">
-                <Sparkles size={16} className="text-purple-600 shrink-0" />
+              <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200/70 flex items-center gap-2.5 text-xs text-blue-900">
+                <Sparkles size={16} className="text-blue-600 shrink-0" />
                 <span>
                   <strong>Tip:</strong> You can switch roles at any time while using the app using the fast role pill switcher in the top navigation bar!
                 </span>
@@ -503,11 +503,11 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
         {/* Bottom Actions Bar */}
         <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3">
           <label className="flex items-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
-            <input
+            <input autoComplete="off"
               type="checkbox"
               checked={dontShowAgain}
               onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
             />
             <span>Don't show this intro automatically on launch</span>
           </label>

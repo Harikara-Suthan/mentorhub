@@ -56,6 +56,7 @@ export const chatWithMentorAI = asyncHandler(async (req: Request, res: Response)
           role: "STUDENT",
           name: student.fullName,
           registerNumber: student.registerNumber,
+          rollNumber: student.rollNumber || undefined,
           department: student.department?.name || "Computer Science & Engineering",
           deptCode: student.department?.code || "CSE",
           year: student.year,
@@ -110,7 +111,7 @@ export const chatWithMentorAI = asyncHandler(async (req: Request, res: Response)
             const r = s.riskAssessments?.[0]?.riskLevel;
             return r === "HIGH" || r === "CRITICAL";
           })
-          .map((s: any) => `${s.fullName} (${s.registerNumber}) - Risk: ${s.riskAssessments?.[0]?.riskLevel || "HIGH"}`);
+          .map((s: any) => `${s.fullName} (${s.rollNumber ? `Roll: ${s.rollNumber}, ` : ""}Reg: ${s.registerNumber}) - Risk: ${s.riskAssessments?.[0]?.riskLevel || "HIGH"}`);
 
         userProfile = {
           role: "MENTOR",
@@ -133,9 +134,21 @@ export const chatWithMentorAI = asyncHandler(async (req: Request, res: Response)
         };
       }
     } else if (req.user.role === "HOD") {
-      const hodDept = await prisma.department.findFirst();
-      const allFaculty = await prisma.mentor.findMany();
+      const hod = await prisma.mentor.findUnique({
+        where: { userId: req.user.userId },
+        include: { department: true }
+      });
+      const hodDeptId = hod?.departmentId;
+      const allFaculty = await prisma.mentor.findMany({
+        where: hodDeptId ? {
+          OR: [
+            { departmentId: hodDeptId },
+            { students: { some: { departmentId: hodDeptId } } }
+          ]
+        } : {}
+      });
       const allStudents = await prisma.student.findMany({
+        where: hodDeptId ? { departmentId: hodDeptId } : {},
         include: {
           riskAssessments: { orderBy: { createdAt: "desc" }, take: 1 },
         },
@@ -148,12 +161,12 @@ export const chatWithMentorAI = asyncHandler(async (req: Request, res: Response)
 
       userProfile = {
         role: "HOD",
-        name: "Dr. Arvind Swamy",
-        designation: "Professor & Head of Department",
-        department: hodDept?.name || "Computer Science & Engineering",
-        facultyCount: allFaculty.length || 6,
-        studentCount: allStudents.length || 50,
-        criticalStudentCount: criticalStudents.length || 8,
+        name: hod?.fullName || "Dr. Arvind Swamy",
+        designation: hod?.designation || "Professor & Head of Department",
+        department: hod?.department?.name || "Computer Science & Engineering",
+        facultyCount: allFaculty.length,
+        studentCount: allStudents.length,
+        criticalStudentCount: criticalStudents.length,
       };
     }
   }

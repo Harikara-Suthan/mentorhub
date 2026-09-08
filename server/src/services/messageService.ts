@@ -197,7 +197,38 @@ export class MessageService {
   }
 
   async getAvailableContacts(currentUserId: string, currentUserRole: Role): Promise<{ id: string; name: string; email: string; role: Role }[]> {
-    const users = await prisma.user.findMany({ include: { student: true, mentor: true } });
+    let users = await prisma.user.findMany({ include: { student: true, mentor: { include: { students: true } } } });
+    
+    // Apply access scoping
+    if (currentUserRole === "HOD") {
+      const hod = await prisma.mentor.findUnique({ where: { userId: currentUserId } });
+      if (hod) {
+        users = users.filter(u => {
+          if (u.role === "STUDENT" && u.student) return u.student.departmentId === hod.departmentId;
+          if ((u.role === "MENTOR" || u.role === "HOD") && u.mentor) {
+             if (u.mentor.departmentId === hod.departmentId) return true;
+             return (u.mentor as any).students?.some((s: any) => s.departmentId === hod.departmentId);
+          }
+          return false;
+        });
+      }
+    } else if (currentUserRole === "MENTOR") {
+      const mentor = await prisma.mentor.findUnique({ where: { userId: currentUserId }, include: { students: true } });
+      if (mentor) {
+        const studentUserIds = new Set(mentor.students.map(s => s.userId));
+        users = users.filter(u => {
+          if (u.role === "STUDENT") return studentUserIds.has(u.id);
+          if (u.role === "HOD" && u.mentor) return u.mentor.departmentId === mentor.departmentId;
+          return false;
+        });
+      }
+    } else if (currentUserRole === "STUDENT") {
+      const student = await prisma.student.findUnique({ where: { userId: currentUserId }, include: { mentor: { include: { user: true } } } });
+      if (student) {
+        users = users.filter(u => u.id === student.mentor?.userId);
+      }
+    }
+
     const filtered = users.filter((u) => u.id !== currentUserId);
 
     return filtered.map((u) => ({

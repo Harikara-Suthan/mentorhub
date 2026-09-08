@@ -1,103 +1,45 @@
-import { NavLink } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Users,
-  CalendarClock,
-  FlagTriangleRight,
-  ListChecks,
-  FileBarChart,
-  Bell,
-  Bot,
-  Calendar,
-  Compass,
-  Code2,
-  TrendingUp,
-  MessageSquare,
-  User,
-  Sparkles,
-} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useIntro } from "../../context/IntroContext";
 import { MentorHubLogo } from "../ui/MentorHubLogo";
-
-const NAV = {
-  MENTOR: [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/students", label: "Mentee Directory", icon: Users },
-    { to: "/meetings", label: "Advisory Meetings", icon: CalendarClock },
-    { to: "/actions", label: "Actions & Tasks", icon: ListChecks },
-    { to: "/messages", label: "Direct Messages", icon: MessageSquare },
-    { to: "/ai-mentor", label: "AI Mentor Assistant", icon: Bot, isAi: true },
-    { to: "/study-planner", label: "Study Planner", icon: Calendar },
-    { to: "/career-guidance", label: "Career Guidance", icon: Compass },
-    { to: "/skills", label: "Skills Matrix", icon: Code2 },
-    { to: "/issues", label: "Issues & Escalations", icon: FlagTriangleRight },
-    { to: "/reports", label: "Reports & NAAC", icon: FileBarChart },
-    { to: "/profile", label: "My Profile", icon: User },
-    { to: "/notifications", label: "Notifications", icon: Bell },
-  ],
-  HOD: [
-    { to: "/dashboard", label: "Overview & Analytics", icon: LayoutDashboard },
-    { to: "/students", label: "Department Students", icon: Users },
-    { to: "/meetings", label: "Department Meetings", icon: CalendarClock },
-    { to: "/actions", label: "Faculty Actions", icon: ListChecks },
-    { to: "/messages", label: "Messages & Direct Line", icon: MessageSquare },
-    { to: "/ai-mentor", label: "AI Mentor Assistant", icon: Bot, isAi: true },
-    { to: "/study-planner", label: "Academic Planner", icon: Calendar },
-    { to: "/career-guidance", label: "Placement Hub", icon: Compass },
-    { to: "/skills", label: "Department Skills", icon: Code2 },
-    { to: "/issues", label: "Escalated Issues", icon: FlagTriangleRight },
-    { to: "/reports", label: "Accreditation & NAAC", icon: FileBarChart },
-    { to: "/profile", label: "My Profile", icon: User },
-    { to: "/notifications", label: "Notifications", icon: Bell },
-  ],
-  STUDENT: [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/ai-mentor", label: "AI Mentor Copilot", icon: Bot, isAi: true },
-    { to: "/actions", label: "Tasks & Action Items", icon: ListChecks },
-    { to: "/messages", label: "Direct Messages", icon: MessageSquare },
-    { to: "/study-planner", label: "Study Planner", icon: Calendar },
-    { to: "/career-guidance", label: "Career Guidance", icon: Compass },
-    { to: "/skills", label: "Skills Matrix", icon: Code2 },
-    { to: "/progress", label: "Academic Progress", icon: TrendingUp },
-    { to: "/profile", label: "My Profile", icon: User },
-    { to: "/notifications", label: "Notifications", icon: Bell },
-  ],
-};
+import { NAV_ITEMS_BY_ROLE, isRouteActive } from "./navConfig";
 
 const ROLE_INFO: Record<string, { label: string; badge: string; color: string }> = {
-  HOD: { label: "Department Head", badge: "HOD", color: "bg-purple-500/15 text-purple-300 border-purple-500/30" },
-  MENTOR: { label: "Faculty Advisor", badge: "Mentor", color: "bg-indigo-500/15 text-indigo-300 border-indigo-500/30" },
-  STUDENT: { label: "Student Mentee", badge: "Student", color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
+  HOD: { label: "Department Head", badge: "HOD", color: "bg-blue-500/10 text-blue-700 border-blue-200" },
+  MENTOR: { label: "Faculty Advisor", badge: "Mentor", color: "bg-sky-500/10 text-sky-700 border-sky-200" },
+  STUDENT: { label: "Student Mentee", badge: "Student", color: "bg-emerald-500/10 text-emerald-700 border-emerald-200" },
+  ADMIN: { label: "Administrator", badge: "Admin", color: "bg-red-500/10 text-red-700 border-red-200" },
 };
 
 export function Sidebar() {
   const { user } = useAuth();
   const { openIntro } = useIntro();
+  const location = useLocation();
+
   if (!user) return null;
-  const items = NAV[user.role] || NAV.STUDENT;
+  const items = NAV_ITEMS_BY_ROLE[user.role] || NAV_ITEMS_BY_ROLE.STUDENT;
   const roleMeta = ROLE_INFO[user.role] || ROLE_INFO.MENTOR;
 
   return (
-    <aside className="w-64 shrink-0 bg-[#0F172A] text-slate-200 flex flex-col h-screen sticky top-0 border-r border-slate-800 shadow-panel z-20">
+    <aside className="w-64 shrink-0 bg-white text-slate-800 flex flex-col h-screen sticky top-0 border-r border-blue-100 shadow-xs z-20">
       {/* Brand Header */}
-      <div className="px-5 h-16 flex items-center justify-between border-b border-slate-800/90 bg-[#0F172A]">
-        <MentorHubLogo size="md" theme="dark" animate={false} />
+      <div className="px-5 h-16 flex items-center justify-between border-b border-blue-50 bg-sky-50/50">
+        <MentorHubLogo size="md" theme="light" animate={false} />
       </div>
 
       {/* User Role Card in Sidebar */}
       <div className="px-3.5 pt-4 pb-2">
-        <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs font-bold uppercase shrink-0">
+        <div className="p-2.5 rounded-xl bg-slate-50 border border-blue-100/50 flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold uppercase shrink-0">
             {user.email[0]}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-100 truncate">{user.email.split("@")[0]}</p>
+            <p className="text-xs font-semibold text-slate-900 truncate">{user.email.split("@")[0]}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className={`text-[10px] font-medium px-1.5 py-0.2 rounded border ${roleMeta.color}`}>
                 {roleMeta.badge}
               </span>
-              <span className="text-[10px] text-slate-400 truncate">{roleMeta.label}</span>
+              <span className="text-[10px] text-slate-500 truncate">{roleMeta.label}</span>
             </div>
           </div>
         </div>
@@ -108,74 +50,60 @@ export function Sidebar() {
         <p className="px-3 py-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
           Workspace
         </p>
-        {items.map(({ to, label, icon: Icon, isAi }: any) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+        {items.map(({ to, label, icon: Icon, isAi, aliases }) => {
+          const isActive = isRouteActive(location.pathname, to, aliases);
+
+          return (
+            <Link
+              key={to}
+              to={to}
+              id={`nav-item-${to.replace(/[^a-zA-Z0-9]/g, "-")}`}
+              className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
                 isActive
-                  ? "bg-purple-600/15 text-purple-300 font-semibold"
-                  : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
-                      isActive
-                        ? "text-purple-400"
-                        : isAi
-                        ? "text-purple-400 group-hover:text-purple-300"
-                        : "text-slate-400 group-hover:text-slate-200"
-                    }`}
-                  >
-                    <Icon size={16} />
-                  </div>
-                  <span className="truncate">{label}</span>
+                  ? "bg-blue-50 text-blue-700 font-semibold"
+                  : "text-slate-600 hover:bg-sky-50/50 hover:text-slate-950"
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div
+                  className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors shrink-0 ${
+                    isActive
+                      ? "text-blue-600"
+                      : isAi
+                      ? "text-blue-500 group-hover:text-blue-600"
+                      : "text-slate-400 group-hover:text-slate-600"
+                  }`}
+                >
+                  <Icon size={16} />
                 </div>
+                <span className="truncate">{label}</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
                 {isAi && !isActive && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300">
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-500/10 text-blue-600">
                     AI
                   </span>
                 )}
                 {isActive && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                 )}
-              </>
-            )}
-          </NavLink>
-        ))}
+              </div>
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Platform Tour & Intro CTA */}
-      <div className="px-3 py-2 border-t border-slate-800/60">
+      {/* Intro Tutorial Launcher */}
+      <div className="px-3.5 py-3 border-t border-blue-50 bg-sky-50/30">
         <button
           onClick={openIntro}
-          id="sidebar_platform_tour_btn"
-          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-purple-300 bg-purple-950/40 hover:bg-purple-900/50 border border-purple-800/40 transition-all group cursor-pointer shadow-xs"
+          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-50/80 rounded-xl transition-colors cursor-pointer"
         >
-          <div className="flex items-center gap-2">
-            <Sparkles size={14} className="text-purple-400 group-hover:scale-110 transition-transform" />
-            <span>Platform Tour & Guide</span>
-          </div>
-          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-200">
-            INFO
+          <span className="w-5 h-5 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-[11px]">
+            ?
           </span>
+          <span>Tour & Guidance</span>
         </button>
-      </div>
-
-      {/* System Status Footer */}
-      <div className="p-3 border-t border-slate-800/80">
-        <div className="flex items-center justify-between text-[11px] text-slate-400 px-2.5 py-1.5 rounded-lg bg-slate-900/60 border border-slate-800">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="font-medium text-slate-300">MentorHUB Core</span>
-          </div>
-          <span className="text-[10px] font-mono text-emerald-400">Online</span>
-        </div>
       </div>
     </aside>
   );

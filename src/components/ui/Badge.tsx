@@ -51,10 +51,10 @@ export function Badge({
       border: "border-brand-200/60",
     },
     purple: {
-      bg: "bg-purple-50",
-      text: "text-purple-700",
-      dot: "bg-purple-500",
-      border: "border-purple-200/60",
+      bg: "bg-blue-50",
+      text: "text-blue-700",
+      dot: "bg-blue-500",
+      border: "border-blue-200/60",
     },
   };
 

@@ -5,17 +5,17 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: "#FAF5FF",
-          100: "#F3E8FF",
-          200: "#E9D5FF",
-          300: "#D8B4FE",
-          400: "#C084FC",
-          500: "#8B5CF6",
-          600: "#7C3AED",
-          700: "#6D28D9",
-          800: "#5B21B6",
-          900: "#4C1D95",
-          950: "#2E1065",
+          50: "#F0F9FF",
+          100: "#E0F2FE",
+          200: "#BAE6FD",
+          300: "#7DD3FC",
+          400: "#38BDF8",
+          500: "#0EA5E9",
+          600: "#2563EB",
+          700: "#1D4ED8",
+          800: "#1E40AF",
+          900: "#1E3A8A",
+          950: "#172554",
         },
         purple: {
           50: "#FAF5FF",
@@ -65,9 +65,9 @@ export default {
           warm: "#FBBF24",
         },
         surface: {
-          DEFAULT: "#F8FAFC", // Soft neutral off-white surface
-          muted: "#F1F5F9",
-          subtle: "#E2E8F0",
+          DEFAULT: "#EFF6FF", // Premium soft light-blue page background
+          muted: "#DBEAFE",
+          subtle: "#BFDBFE",
         },
         card: "#FFFFFF",
         line: {

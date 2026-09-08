@@ -203,7 +203,7 @@ export function Messages() {
         return {
           label: "Head of Dept",
           icon: ShieldCheck,
-          className: "bg-purple-100 text-purple-700 border-purple-200",
+          className: "bg-blue-100 text-blue-700 border-blue-200",
         };
       case "MENTOR":
         return {
@@ -229,7 +229,7 @@ export function Messages() {
             <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
               Advisory & Peer Messaging
             </h1>
-            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
               Direct Channel
             </span>
           </div>
@@ -240,7 +240,7 @@ export function Messages() {
         <button
           id="btn_new_message"
           onClick={() => setShowNewChatModal(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs md:text-sm font-medium shadow-sm transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm font-medium shadow-sm transition-colors cursor-pointer"
         >
           <Plus size={16} />
           <span>New Chat</span>
@@ -262,13 +262,13 @@ export function Messages() {
                 size={16}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               />
-              <input
+              <input autoComplete="off"
                 id="input_search_conversations"
                 type="text"
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
               />
             </div>
           </div>
@@ -300,7 +300,7 @@ export function Messages() {
                     onClick={() => setActiveParticipantId(conv.participantId)}
                     className={`w-full p-3.5 flex items-start gap-3 text-left transition-colors cursor-pointer ${
                       isSelected
-                        ? "bg-purple-50/80 border-l-4 border-l-purple-600"
+                        ? "bg-blue-50/80 border-l-4 border-l-blue-600"
                         : "hover:bg-slate-100/70"
                     }`}
                   >
@@ -309,7 +309,7 @@ export function Messages() {
                         {conv.participantName.charAt(0)}
                       </div>
                       {conv.unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] font-bold flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-bold flex items-center justify-center">
                           {conv.unreadCount}
                         </span>
                       )}
@@ -360,7 +360,7 @@ export function Messages() {
                   >
                     <ArrowLeft size={18} />
                   </button>
-                  <div className="w-9 h-9 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-blue-700 text-white flex items-center justify-center font-bold text-sm shrink-0">
                     {activeName.charAt(0)}
                   </div>
                   <div>
@@ -387,7 +387,7 @@ export function Messages() {
                   <button
                     id="btn_ask_ai_helper"
                     onClick={() => navigate("/ai-mentor")}
-                    className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-colors cursor-pointer"
+                    className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
                   >
                     <Sparkles size={13} />
                     <span>AI Copilot</span>
@@ -431,22 +431,22 @@ export function Messages() {
                         <div
                           className={`max-w-[85%] md:max-w-[70%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed shadow-sm ${
                             isMe
-                              ? "bg-purple-600 text-white rounded-tr-xs"
+                              ? "bg-blue-600 text-white rounded-tr-xs"
                               : "bg-white text-slate-800 border border-slate-200 rounded-tl-xs"
                           }`}
                         >
                           <p className="whitespace-pre-wrap">{msg.content}</p>
                           <div
                             className={`flex items-center justify-end gap-1 mt-1 text-[9px] ${
-                              isMe ? "text-purple-200" : "text-slate-400"
+                              isMe ? "text-blue-200" : "text-slate-400"
                             }`}
                           >
                             {isMe && (
                               <span>
                                 {msg.isRead ? (
-                                  <CheckCheck size={12} className="text-purple-200" />
+                                  <CheckCheck size={12} className="text-blue-200" />
                                 ) : (
-                                  <Check size={12} className="text-purple-300" />
+                                  <Check size={12} className="text-sky-300" />
                                 )}
                               </span>
                             )}
@@ -464,19 +464,19 @@ export function Messages() {
                 onSubmit={handleSendMessage}
                 className="p-3 border-t border-slate-200 bg-white flex items-center gap-2 shrink-0"
               >
-                <input
+                <input autoComplete="off"
                   id="input_message_content"
                   type="text"
                   placeholder={`Write a message to ${activeName}...`}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1 px-3.5 py-2 text-xs md:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors"
+                  className="flex-1 px-3.5 py-2 text-xs md:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                 />
                 <button
                   id="btn_send_message"
                   type="submit"
                   disabled={!newMessage.trim() || sending}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-xl text-xs md:text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs md:text-sm font-medium shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send size={15} />
                   <span className="hidden sm:inline">Send</span>
@@ -485,7 +485,7 @@ export function Messages() {
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-              <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3">
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
                 <MessageSquare size={28} />
               </div>
               <h3 className="text-sm font-bold text-slate-800">Select a Conversation</h3>
@@ -521,13 +521,13 @@ export function Messages() {
                   size={15}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                 />
-                <input
+                <input autoComplete="off"
                   id="input_search_contacts"
                   type="text"
                   placeholder="Search by name, role, or email..."
                   value={contactSearch}
                   onChange={(e) => setContactSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
             </div>
@@ -545,7 +545,7 @@ export function Messages() {
                       key={contact.id}
                       id={`contact_option_${contact.id}`}
                       onClick={() => handleStartNewChat(contact.id)}
-                      className="w-full p-2.5 rounded-xl flex items-center justify-between hover:bg-purple-50 transition-colors text-left cursor-pointer"
+                      className="w-full p-2.5 rounded-xl flex items-center justify-between hover:bg-blue-50 transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-bold">

@@ -66,22 +66,22 @@ export function WelcomeIntroBanner() {
   const Icon = content.icon;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#170E30] via-[#1F123F] to-[#120B24] text-white p-4 sm:p-5 border border-purple-500/30 shadow-md mb-6">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#170E30] via-[#1F123F] to-[#120B24] text-white p-4 sm:p-5 border border-blue-500/30 shadow-md mb-6">
       {/* Background glow dots */}
-      <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-purple-600/25 blur-3xl pointer-events-none" />
+      <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-blue-600/25 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-indigo-600/20 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0 mt-0.5">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-sky-300 shrink-0 mt-0.5">
             <Icon size={20} />
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-200 border border-purple-400/30">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/25 text-blue-200 border border-blue-400/30">
                 {content.badge}
               </span>
-              <span className="text-[11px] text-purple-300/80 font-medium hidden sm:inline">
+              <span className="text-[11px] text-sky-300/80 font-medium hidden sm:inline">
                 {content.tagline}
               </span>
             </div>
@@ -97,7 +97,7 @@ export function WelcomeIntroBanner() {
         <div className="flex items-center gap-2 self-end md:self-center shrink-0">
           <button
             onClick={openIntro}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
           >
             <Sparkles size={13} />
             <span>{content.primaryAction}</span>

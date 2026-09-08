@@ -1,6 +1,41 @@
-export type Role = "HOD" | "MENTOR" | "STUDENT";
+export type Role = "HOD" | "MENTOR" | "STUDENT" | "ADMIN";
 
 export type RiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+
+export type FeeStatus = "PAID" | "PARTIALLY_PAID" | "PENDING" | "OVERDUE" | "UNAVAILABLE";
+
+export interface StudentFeeRecord {
+  id: string;
+  feeCategory: string;
+  academicYear?: string | null;
+  semester?: number | null;
+  totalFees: number;
+  amountPaid: number;
+  outstandingAmount: number;
+  status: FeeStatus;
+  statusLabel: string;
+  dueDate?: string | null;
+  lastPaymentDate?: string | null;
+  paymentReference?: string | null;
+  remarks?: string | null;
+  createdAt?: string | null;
+}
+
+export interface StudentFeeSummary {
+  hasFeeData: boolean;
+  feeStatus: FeeStatus;
+  feeStatusLabel: string;
+  totalFees: number | null;
+  amountPaid: number | null;
+  outstandingAmount: number | null;
+  academicYear?: string | null;
+  semester?: number | null;
+  lastPaymentDate?: string | null;
+  paymentReference?: string | null;
+  feeCategory?: string | null;
+  remarks?: string | null;
+  fees: StudentFeeRecord[];
+}
 
 export interface AuthUser {
   id: string;
@@ -23,6 +58,8 @@ export interface Mentor {
   employeeId: string;
   departmentId: string;
   profilePicture?: string | null;
+  isCrossDepartment?: boolean;
+  crossDepartmentLabel?: string;
 }
 
 export interface RiskAssessment {
@@ -37,6 +74,8 @@ export interface Student {
   id: string;
   fullName: string;
   registerNumber: string;
+  rollNumber?: string | null;
+  admissionYear?: number | null;
   profilePicture?: string | null;
   year: string;
   section: string;
@@ -54,6 +93,8 @@ export interface Student {
   placementStatus: "NOT_ELIGIBLE" | "ELIGIBLE" | "IN_PROGRESS" | "PLACED";
   internshipStatus: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
   certificationCount: number;
+  feeStatus?: FeeStatus;
+  feeDetails?: StudentFeeSummary;
   latestRisk?: RiskAssessment | null;
   riskAssessments?: RiskAssessment[];
   meetings?: Meeting[];
@@ -64,7 +105,7 @@ export interface Student {
 export interface Meeting {
   id: string;
   studentId: string;
-  student?: { id: string; fullName: string; registerNumber: string };
+  student?: { id: string; fullName: string; registerNumber: string; rollNumber?: string | null };
   mentorId: string;
   meetingDate: string;
   meetingType: "INDIVIDUAL" | "GROUP";
@@ -94,7 +135,7 @@ export type IssueCategory =
 export interface Issue {
   id: string;
   studentId: string;
-  student?: { id: string; fullName: string; registerNumber: string };
+  student?: { id: string; fullName: string; registerNumber: string; rollNumber?: string | null };
   category: IssueCategory;
   description: string;
   severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
@@ -107,7 +148,7 @@ export interface Issue {
 export interface ActionItem {
   id: string;
   studentId: string;
-  student?: { id: string; fullName: string; registerNumber: string };
+  student?: { id: string; fullName: string; registerNumber: string; rollNumber?: string | null };
   description: string;
   assignedTo: string;
   actionType: "STUDENT_ACTION" | "MENTOR_ACTION";

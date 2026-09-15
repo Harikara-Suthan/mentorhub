@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Sparkles, X, ArrowRight, Bot, ShieldCheck, Users, GraduationCap, ChevronRight } from "lucide-react";
+import { Sparkles, X, GraduationCap, Users, ShieldCheck, ChevronRight } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useIntro } from "../../context/IntroContext";
+import { safeGetItem, safeSetItem } from "../../utils/storage";
 
 export function WelcomeIntroBanner() {
   const { user } = useAuth();
@@ -10,14 +11,14 @@ export function WelcomeIntroBanner() {
 
   useEffect(() => {
     if (!user) return;
-    const isDismissed = localStorage.getItem(`mentorhub_dismiss_banner_${user.role}`) === "true";
+    const isDismissed = safeGetItem(`mentorhub_dismiss_banner_${user.role}`) === "true";
     setDismissed(isDismissed);
   }, [user]);
 
   if (dismissed || !user) return null;
 
   const handleDismiss = () => {
-    localStorage.setItem(`mentorhub_dismiss_banner_${user.role}`, "true");
+    safeSetItem(`mentorhub_dismiss_banner_${user.role}`, "true");
     setDismissed(true);
   };
 
@@ -36,7 +37,7 @@ export function WelcomeIntroBanner() {
         return {
           badge: "COHORT INTELLIGENCE",
           title: "Faculty Advisory Command Center",
-          desc: "Continuous telemetry tracks 20 student mentees. Early warning alerts detect attendance drops and arrears automatically.",
+          desc: "Continuous telemetry tracks student mentees. Early warning alerts detect attendance drops and arrears automatically.",
           icon: Users,
           primaryAction: "Review Advisory System",
           tagline: "Proactive, data-backed mentoring",

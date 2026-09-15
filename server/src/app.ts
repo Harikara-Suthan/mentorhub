@@ -20,6 +20,8 @@ import exportRoutes from "./routes/exportRoutes";
 import notificationRoutes from "./routes/notificationRoutes";
 import departmentRoutes from "./routes/departmentRoutes";
 import messageRoutes from "./routes/messageRoutes";
+import whatsappRoutes from "./routes/whatsappRoutes";
+import adminRoutes from "./routes/adminRoutes";
 
 const app = express();
 
@@ -68,6 +70,8 @@ app.use("/api/export", exportRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Catch unhandled API routes
 app.use("/api/*", notFoundHandler);

@@ -158,10 +158,12 @@ export default function Students() {
 
         {user?.role !== "STUDENT" && (
           <button
+            id="btn-add-new-student"
             onClick={() => setShowModal(true)}
-            className="btn-primary text-xs py-2 px-3.5 self-start sm:self-auto shadow-xs"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-xs transition-all cursor-pointer shrink-0 self-start sm:self-auto"
           >
-            <Plus size={14} /> Add New Mentee
+            <Plus size={15} className="shrink-0 stroke-[2.5]" />
+            <span>Add New Student</span>
           </button>
         )}
       </div>
@@ -690,8 +692,8 @@ function AddStudentModal({
       <div className="app-card w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 md:p-7 shadow-xl border border-slate-200">
         <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
           <div>
-            <h2 className="font-display text-base font-bold text-slate-900">Add New Mentee</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Enter academic details to enroll student into mentoring system</p>
+            <h2 className="font-display text-base font-bold text-slate-900">Add New Student</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Enter academic details to enroll student into the system</p>
           </div>
           <button
             onClick={onClose}

@@ -142,10 +142,10 @@ async function scopedWhere(user: JwtPayload, filters: StudentListFilters) {
     where.departmentId = mentor.departmentId;
   }
 
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const isValidId = (val?: string) => Boolean(val && val.trim() && val.toUpperCase() !== "ALL");
 
-  const deptId = filters.departmentId && filters.departmentId.toUpperCase() !== "ALL" && uuidRegex.test(filters.departmentId) ? filters.departmentId : undefined;
-  const mentId = filters.mentorId && filters.mentorId.toUpperCase() !== "ALL" && uuidRegex.test(filters.mentorId) ? filters.mentorId : undefined;
+  const deptId = isValidId(filters.departmentId) ? filters.departmentId!.trim() : undefined;
+  const mentId = isValidId(filters.mentorId) ? filters.mentorId!.trim() : undefined;
   const yr = filters.year && filters.year.toUpperCase() !== "ALL" ? filters.year : undefined;
   const sec = filters.section && filters.section.toUpperCase() !== "ALL" ? filters.section : undefined;
 
@@ -537,9 +537,17 @@ export async function createStudent(user: JwtPayload, data: Record<string, any>)
 }
 
 export async function updateStudent(user: JwtPayload, studentId: string, data: Record<string, any>) {
+  const currentStudent = await prisma.student.findUnique({
+    where: { id: studentId },
+    include: {
+      department: true,
+      mentor: { select: { id: true, fullName: true, employeeId: true } },
+    },
+  });
+  if (!currentStudent) throw ApiError.notFound("Student record not found");
+
   if (user.role === "STUDENT") {
-    const student = await prisma.student.findUnique({ where: { userId: user.userId } });
-    if (!student || student.id !== studentId) {
+    if (currentStudent.userId !== user.userId) {
       throw ApiError.forbidden("You can only edit your own student profile");
     }
 
@@ -575,42 +583,167 @@ export async function updateStudent(user: JwtPayload, studentId: string, data: R
       }
     }
 
-    if (data.profilePicture !== undefined && student.userId) {
+    if (data.profilePicture !== undefined && currentStudent.userId) {
       await prisma.user.update({
-        where: { id: student.userId },
+        where: { id: currentStudent.userId },
         data: { profilePicture: data.profilePicture },
-      });
+      }).catch(() => {});
     }
 
-    return prisma.student.update({ where: { id: studentId }, data: payload });
+    const updatedStudent = await prisma.student.update({ where: { id: studentId }, data: payload });
+    return { student: updatedStudent, changes: { changedFields: Object.keys(payload), previousValues: {}, newValues: payload } };
   }
 
-  await getStudentById(user, studentId); // ensures scoped access for mentors/hod
+  // Mentor and HOD role checks
+  if (user.role === "MENTOR") {
+    const mentor = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!mentor || currentStudent.mentorId !== mentor.id) {
+      throw ApiError.forbidden("Access denied: You can only edit students assigned to your mentorship cohort");
+    }
+  } else if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod || currentStudent.departmentId !== hod.departmentId) {
+      throw ApiError.forbidden("Access denied: You can only edit students registered under your academic department");
+    }
+  }
+  // When user.role === "ADMIN", full institution-wide edit authority is granted.
 
-  const payload: Record<string, unknown> = { ...data };
-  if (data.dateOfBirth) payload.dateOfBirth = new Date(data.dateOfBirth);
-  if (data.email === "") payload.email = null;
+  const payload: Record<string, any> = {};
 
+  // Register Number validation (separate from Roll Number)
+  if (data.registerNumber !== undefined) {
+    const regNum = String(data.registerNumber).trim();
+    if (!regNum) throw ApiError.badRequest("Register Number cannot be empty");
+    const existing = await prisma.student.findFirst({
+      where: { registerNumber: regNum, NOT: { id: studentId } },
+    });
+    if (existing) {
+      throw ApiError.badRequest(`Register Number '${regNum}' is already assigned to student ${existing.fullName}`);
+    }
+    payload.registerNumber = regNum;
+  }
+
+  // Roll Number validation (preserved as string, e.g. leading zeros like 24AIDS01)
   if (data.rollNumber !== undefined) {
     if (data.rollNumber === "" || data.rollNumber === null) {
       payload.rollNumber = null;
     } else {
-      const formatted = String(data.rollNumber).trim().toUpperCase();
+      const rollStr = String(data.rollNumber).trim();
       const existing = await prisma.student.findFirst({
-        where: { rollNumber: formatted, NOT: { id: studentId } }
+        where: { rollNumber: rollStr, NOT: { id: studentId } },
       });
       if (existing) {
-        throw ApiError.badRequest(`Roll Number '${formatted}' is already assigned to student ${existing.fullName} (${existing.registerNumber})`);
+        throw ApiError.badRequest(`Roll Number '${rollStr}' is already assigned to student ${existing.fullName} (${existing.registerNumber})`);
       }
-      payload.rollNumber = formatted;
+      payload.rollNumber = rollStr;
     }
   }
 
-  return prisma.student.update({ where: { id: studentId }, data: payload });
+  if (data.admissionNumber !== undefined) {
+    payload.admissionNumber = data.admissionNumber ? String(data.admissionNumber).trim() : null;
+  }
+
+  if (data.fullName !== undefined) {
+    const name = String(data.fullName).trim();
+    if (!name) throw ApiError.badRequest("Student Name cannot be empty");
+    payload.fullName = name;
+  }
+
+  if (data.email !== undefined) {
+    const emailVal = data.email ? String(data.email).trim().toLowerCase() : null;
+    payload.email = emailVal;
+    if (currentStudent.userId && emailVal) {
+      await prisma.user.update({
+        where: { id: currentStudent.userId },
+        data: { email: emailVal },
+      }).catch(() => {});
+    }
+  }
+
+  if (data.phone !== undefined) payload.phone = data.phone ? String(data.phone).trim() : null;
+  if (data.parentName !== undefined) payload.parentName = data.parentName ? String(data.parentName).trim() : null;
+  if (data.parentContact !== undefined) payload.parentContact = data.parentContact ? String(data.parentContact).trim() : null;
+
+  if (data.departmentId !== undefined) {
+    const dept = await prisma.department.findUnique({ where: { id: data.departmentId } });
+    if (!dept) throw ApiError.badRequest("Selected department does not exist");
+    payload.departmentId = data.departmentId;
+  }
+
+  if (data.mentorId !== undefined) {
+    const mentor = await prisma.mentor.findUnique({ where: { id: data.mentorId } });
+    if (!mentor) throw ApiError.badRequest("Selected mentor does not exist");
+    payload.mentorId = data.mentorId;
+  }
+
+  if (data.year !== undefined) payload.year = String(data.year).trim();
+  if (data.section !== undefined) payload.section = String(data.section).trim();
+  if (data.semester !== undefined) payload.semester = data.semester !== null && data.semester !== "" ? Number(data.semester) : null;
+  if (data.academicYear !== undefined) payload.academicYear = data.academicYear ? String(data.academicYear).trim() : null;
+  if (data.degree !== undefined) payload.degree = data.degree ? String(data.degree).trim() : null;
+  if (data.batch !== undefined) payload.batch = data.batch ? String(data.batch).trim() : null;
+  if (data.admissionYear !== undefined) payload.admissionYear = data.admissionYear ? Number(data.admissionYear) : null;
+
+  if (data.dateOfBirth !== undefined) {
+    payload.dateOfBirth = data.dateOfBirth ? new Date(data.dateOfBirth) : null;
+  }
+  if (data.gender !== undefined) payload.gender = data.gender ? String(data.gender).trim() : null;
+  if (data.address !== undefined) payload.address = data.address ? String(data.address).trim() : null;
+  if (data.city !== undefined) payload.city = data.city ? String(data.city).trim() : null;
+  if (data.state !== undefined) payload.state = data.state ? String(data.state).trim() : null;
+  if (data.zipCode !== undefined) payload.zipCode = data.zipCode ? String(data.zipCode).trim() : null;
+
+  if (data.careerGoal !== undefined) payload.careerGoal = data.careerGoal ? String(data.careerGoal).trim() : null;
+  if (data.targetRole !== undefined) payload.targetRole = data.targetRole ? String(data.targetRole).trim() : null;
+  if (data.bio !== undefined) payload.bio = data.bio ? String(data.bio).trim() : null;
+
+  if (data.attendancePercentage !== undefined) payload.attendancePercentage = Number(data.attendancePercentage);
+  if (data.cgpa !== undefined) payload.cgpa = Number(data.cgpa);
+  if (data.arrearCount !== undefined) payload.arrearCount = Number(data.arrearCount);
+  if (data.placementStatus !== undefined) payload.placementStatus = data.placementStatus;
+  if (data.internshipStatus !== undefined) payload.internshipStatus = data.internshipStatus;
+  if (data.certificationCount !== undefined) payload.certificationCount = Number(data.certificationCount);
+
+  // Compute diffs for detailed audit logging
+  const changedFields: string[] = [];
+  const previousValues: Record<string, any> = {};
+  const newValues: Record<string, any> = {};
+
+  for (const [key, val] of Object.entries(payload)) {
+    const prev = (currentStudent as any)[key];
+    const prevStr = prev instanceof Date ? prev.toISOString() : String(prev ?? "");
+    const valStr = val instanceof Date ? val.toISOString() : String(val ?? "");
+    if (prevStr !== valStr) {
+      changedFields.push(key);
+      previousValues[key] = prev;
+      newValues[key] = val;
+    }
+  }
+
+  const updatedStudent = await prisma.student.update({
+    where: { id: studentId },
+    data: payload,
+    include: {
+      department: true,
+      mentor: { select: { id: true, fullName: true, employeeId: true, phone: true, designation: true } },
+    },
+  });
+
+  return { student: updatedStudent, changes: { changedFields, previousValues, newValues } };
 }
 
 export async function deleteStudent(user: JwtPayload, studentId: string) {
-  if (user.role !== "MENTOR" && user.role !== "HOD") throw ApiError.forbidden();
-  await getStudentById(user, studentId);
+  if (user.role !== "ADMIN" && user.role !== "MENTOR" && user.role !== "HOD") throw ApiError.forbidden();
+  const student = await prisma.student.findUnique({ where: { id: studentId } });
+  if (!student) throw ApiError.notFound("Student not found");
+
+  // Deactivate linked user account if exists
+  if (student.userId) {
+    await prisma.user.update({
+      where: { id: student.userId },
+      data: { isActive: false },
+    }).catch(() => {});
+  }
+
   return prisma.student.delete({ where: { id: studentId } });
 }

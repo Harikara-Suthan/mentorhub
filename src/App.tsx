@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AnimatePresence } from "motion/react";
 import { useAuth } from "./context/AuthContext";
 import { AppLayout } from "./components/layout/AppLayout";
 import { LoadingState } from "./components/ui/LoadingState";
 import { IntroSplash } from "./components/ui/IntroSplash";
+import { safeSessionGetItem } from "./utils/storage";
 
 import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
@@ -47,17 +48,23 @@ import KnowledgeBase from "./pages/admin/KnowledgeBase";
 import RolesPermissions from "./pages/admin/RolesPermissions";
 import AuditLogs from "./pages/admin/AuditLogs";
 import SystemSettings from "./pages/admin/SystemSettings";
+import WhatsAppAlerts from "./pages/admin/WhatsAppAlerts";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
-        <LoadingState label="Loading MentorHUB Intelligence Hub..." />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-surface p-4">
+        <LoadingState label="Initializing MentorHUB Intelligence Hub..." />
       </div>
     );
   }
-  if (!user) return <Navigate to="/login" replace />;
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 }
 
@@ -70,12 +77,18 @@ function RoleDashboard() {
 }
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState<boolean>(() => {
+    return safeSessionGetItem("mentorhub_intro_seen") !== "true";
+  });
+
+  const handleDismissSplash = useCallback(() => {
+    setShowSplash(false);
+  }, []);
 
   return (
     <>
       <AnimatePresence>
-        {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
+        {showSplash && <IntroSplash onComplete={handleDismissSplash} />}
       </AnimatePresence>
 
       <Routes>
@@ -139,6 +152,9 @@ export default function App() {
           <Route path="/roles" element={<RolesPermissions />} />
           <Route path="/audit-logs" element={<AuditLogs />} />
           <Route path="/settings" element={<SystemSettings />} />
+          <Route path="/whatsapp" element={<WhatsAppAlerts />} />
+          <Route path="/whatsapp-alerts" element={<WhatsAppAlerts />} />
+          <Route path="/admin/whatsapp" element={<WhatsAppAlerts />} />
 
           {/* Root redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

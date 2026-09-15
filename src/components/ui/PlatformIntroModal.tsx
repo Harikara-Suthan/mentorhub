@@ -24,6 +24,7 @@ import {
 import { MentorHubEmblemSvg } from "./MentorHubLogo";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { safeSetItem } from "../../utils/storage";
 
 interface PlatformIntroModalProps {
   isOpen: boolean;
@@ -118,7 +119,7 @@ export function PlatformIntroModal({ isOpen, onClose, onSelectRoleLogin }: Platf
 
   const handleClose = useCallback(() => {
     if (dontShowAgain) {
-      localStorage.setItem("mentorhub_intro_walkthrough_seen", "true");
+      safeSetItem("mentorhub_intro_walkthrough_seen", "true");
     }
     onClose();
   }, [dontShowAgain, onClose]);

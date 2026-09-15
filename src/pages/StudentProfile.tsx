@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   Layers,
   FileCheck,
+  Edit3,
 } from "lucide-react";
 import { api, apiErrorMessage } from "../api/client";
 import { LoadingState, ErrorState, EmptyState } from "../components/ui/LoadingState";
@@ -24,6 +25,7 @@ import { Student } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { BackButton } from "../components/ui/BackButton";
 import { StudentFeeSection } from "../components/StudentFeeSection";
+import { EditStudentModal } from "../components/admin/EditStudentModal";
 
 const SEVERITY_TONE: Record<string, "neutral" | "success" | "warning" | "danger" | "info"> = {
   LOW: "info",
@@ -48,6 +50,8 @@ export default function StudentProfile() {
   const [student, setStudent] = useState<any | null>(null);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"meetings" | "issues" | "actions" | "risk">("meetings");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   function load() {
     if (!id) return;
@@ -74,6 +78,22 @@ export default function StudentProfile() {
           <span className="font-mono font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">{student.id.slice(0, 8)}</span>
         </div>
       </div>
+
+      {/* Success Notification Banner */}
+      {successMsg && (
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between shadow-xs animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+            <span>{successMsg}</span>
+          </div>
+          <button
+            onClick={() => setSuccessMsg("")}
+            className="text-emerald-600 hover:text-emerald-800 text-xs font-bold"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Main Student Header Card */}
       <div className="app-card p-5 sm:p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-slate-200 shadow-xs">
@@ -123,8 +143,20 @@ export default function StudentProfile() {
         </div>
 
         {/* Right Seal & Action Exports */}
-        <div className="flex flex-wrap items-center gap-4 self-start lg:self-center shrink-0">
+        <div className="flex flex-wrap items-center gap-3 self-start lg:self-center shrink-0">
           {latestRisk && <RiskSeal level={latestRisk.riskLevel} score={latestRisk.riskScore} size={56} />}
+          
+          {/* Admin Edit Button */}
+          {user?.role === "ADMIN" && (
+            <button
+              type="button"
+              onClick={() => setShowEditModal(true)}
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs flex items-center gap-2 transition-all hover:shadow-md"
+            >
+              <Edit3 size={15} /> Edit Student
+            </button>
+          )}
+
           {user?.role !== "STUDENT" && (
             <div className="flex flex-row gap-2">
               <a
@@ -509,6 +541,21 @@ export default function StudentProfile() {
           )}
         </div>
       </div>
+
+      {/* Admin Edit Modal */}
+      {user?.role === "ADMIN" && (
+        <EditStudentModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          student={student}
+          onSuccess={(updatedStudent) => {
+            setStudent(updatedStudent);
+            setSuccessMsg(`Changes saved successfully for ${updatedStudent.fullName}.`);
+            setTimeout(() => setSuccessMsg(""), 6000);
+            load();
+          }}
+        />
+      )}
     </div>
   );
 }

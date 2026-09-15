@@ -81,8 +81,22 @@ export const create = asyncHandler(async (req: Request, res: Response) => {
 
 export const update = asyncHandler(async (req: Request, res: Response) => {
   const data = updateStudentSchema.parse(req.body);
-  const student = await studentService.updateStudent(req.user!, req.params.id, data);
-  await logAudit(req, "Student Updated", "Student", req.params.id);
+  const result = await studentService.updateStudent(req.user!, req.params.id, data);
+  const student = result.student;
+
+  const actionName = req.user?.role === "ADMIN" ? "ADMIN_EDIT_STUDENT" : "Student Updated";
+  await logAudit(req, actionName, "Student", req.params.id, {
+    actorEmail: req.user?.email,
+    actorRole: req.user?.role,
+    studentName: student.fullName,
+    registerNumber: student.registerNumber,
+    rollNumber: student.rollNumber,
+    changedFields: result.changes.changedFields,
+    previousValues: result.changes.previousValues,
+    newValues: result.changes.newValues,
+    updatedAt: new Date().toISOString(),
+  });
+
   res.json({ success: true, data: student });
 });
 

@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError";
 import { JwtPayload } from "../utils/jwt";
 import { requireMentorId } from "./accessControl";
 import { formatFeeDetails } from "./studentService";
+import { whatsAppClient } from "../whatsapp/client";
 
 async function latestRiskByStudent(studentIds: string[]) {
   if (studentIds.length === 0) return new Map<string, string>();
@@ -62,17 +63,208 @@ export async function getMentorDashboard(user: JwtPayload) {
   };
 }
 
-export async function getHodDashboard(user: JwtPayload, filters: { departmentId?: string; year?: string; section?: string; mentorId?: string }) {
-  if (user.role !== "HOD") throw ApiError.forbidden();
+export async function getAdminDashboard(user: JwtPayload) {
+  if (user.role !== "ADMIN") throw ApiError.forbidden("Only administrators can access the admin dashboard");
 
-  const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
-  if (!hod) throw ApiError.forbidden("No HOD profile found");
+  const [
+    totalStudents,
+    totalMentors,
+    totalDepartments,
+    allUsers,
+    meetingsCompleted,
+    pendingFollowUps,
+    actionStats,
+    issueByCategory,
+    departments,
+    feeRecords,
+    allStudents,
+    recentAuditLogs,
+    whatsappAlertCounts
+  ] = await Promise.all([
+    prisma.student.count(),
+    prisma.mentor.count(),
+    prisma.department.count(),
+    prisma.user.findMany({ select: { id: true, role: true, isActive: true } }),
+    prisma.meeting.count(),
+    prisma.meeting.count({ where: { nextFollowUpDate: { gte: new Date() } } }),
+    prisma.actionItem.groupBy({ by: ["status"], _count: { status: true } }),
+    prisma.studentIssue.groupBy({ by: ["category"], _count: { category: true } }),
+    prisma.department.findMany({
+      include: {
+        _count: { select: { students: true, mentors: true } },
+      },
+    }),
+    prisma.studentFee.findMany({
+      select: { id: true, totalFees: true, amountPaid: true, status: true, dueDate: true },
+    }),
+    prisma.student.findMany({
+      select: {
+        id: true,
+        fullName: true,
+        registerNumber: true,
+        rollNumber: true,
+        attendancePercentage: true,
+        arrearCount: true,
+        departmentId: true,
+        year: true,
+        section: true,
+        riskAssessments: { orderBy: { createdAt: "desc" }, take: 1, select: { riskLevel: true, riskScore: true } }
+      }
+    }),
+    prisma.auditLog.findMany({
+      take: 8,
+      orderBy: { createdAt: "desc" },
+      include: { user: { select: { email: true, role: true } } },
+    }),
+    prisma.whatsAppNotification.groupBy({
+      by: ["status"],
+      _count: { status: true }
+    }).catch(() => [])
+  ]);
 
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const activeUsers = allUsers.filter(u => u.isActive).length;
+  const inactiveUsers = allUsers.filter(u => !u.isActive).length;
+  const totalHODs = allUsers.filter(u => u.role === "HOD" && u.isActive).length;
 
-  const where: Record<string, unknown> = {
-    departmentId: hod.departmentId,
+  const roleDistribution = {
+    ADMIN: allUsers.filter(u => u.role === "ADMIN").length,
+    HOD: allUsers.filter(u => u.role === "HOD").length,
+    MENTOR: allUsers.filter(u => u.role === "MENTOR").length,
+    STUDENT: allUsers.filter(u => u.role === "STUDENT").length,
   };
+
+  const riskDistribution = { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 } as Record<string, number>;
+  for (const s of allStudents) {
+    const level = s.riskAssessments[0]?.riskLevel || "LOW";
+    riskDistribution[level] = (riskDistribution[level] ?? 0) + 1;
+  }
+
+  const lowAttendance75 = allStudents.filter(s => s.attendancePercentage < 75).length;
+  const lowAttendance85 = allStudents.filter(s => s.attendancePercentage < 85).length;
+  const studentsWithArrears = allStudents.filter(s => s.arrearCount > 0).length;
+
+  let totalFeeExpected = 0;
+  let totalFeeCollected = 0;
+  let feeOverdueCount = 0;
+  let feePendingCount = 0;
+  let feePaidCount = 0;
+  const now = new Date();
+
+  for (const fee of feeRecords) {
+    totalFeeExpected += fee.totalFees || 0;
+    totalFeeCollected += fee.amountPaid || 0;
+    if (fee.status === "OVERDUE" || (fee.dueDate && new Date(fee.dueDate) < now && fee.amountPaid < fee.totalFees)) {
+      feeOverdueCount++;
+    } else if (fee.status === "PAID" || fee.amountPaid >= fee.totalFees) {
+      feePaidCount++;
+    } else {
+      feePendingCount++;
+    }
+  }
+  const totalFeeOutstanding = Math.max(0, totalFeeExpected - totalFeeCollected);
+
+  const whatsAppConfig = whatsAppClient.getConfigStatus();
+  const alertStatusMap: Record<string, number> = {};
+  for (const item of (whatsappAlertCounts as any[])) {
+    alertStatusMap[item.status] = item._count.status;
+  }
+
+  const departmentBreakdown = departments.map(d => ({
+    id: d.id,
+    name: d.name,
+    code: d.code,
+    studentCount: d._count.students,
+    mentorCount: d._count.mentors,
+  }));
+
+  const priorityStudents = allStudents
+    .filter(s => (s.riskAssessments[0]?.riskLevel === "CRITICAL" || s.riskAssessments[0]?.riskLevel === "HIGH" || s.attendancePercentage < 75))
+    .slice(0, 10)
+    .map(s => ({
+      id: s.id,
+      name: s.fullName,
+      registerNumber: s.registerNumber,
+      rollNumber: s.rollNumber,
+      riskLevel: s.riskAssessments[0]?.riskLevel || "MEDIUM",
+      attendance: s.attendancePercentage,
+      arrears: s.arrearCount,
+      year: s.year,
+      section: s.section,
+    }));
+
+  return {
+    cards: {
+      totalStudents,
+      totalMentors,
+      totalHODs,
+      totalDepartments,
+      totalUsers: allUsers.length,
+      activeUsers,
+      inactiveUsers,
+      meetingsCompleted,
+      pendingFollowUps,
+      lowAttendance75,
+      lowAttendance85,
+      studentsWithArrears,
+      feeOverdueCount,
+      feePendingCount,
+      feePaidCount,
+      totalFeeExpected,
+      totalFeeCollected,
+      totalFeeOutstanding,
+      whatsAppConfigured: whatsAppConfig.isConfigured,
+      whatsAppStatus: whatsAppConfig.status,
+      whatsAppStatusLabel: whatsAppConfig.statusLabel,
+      totalWhatsAppAlerts: Object.values(alertStatusMap).reduce((a, b) => a + b, 0),
+      sentWhatsAppAlerts: alertStatusMap["SENT"] || alertStatusMap["DELIVERED"] || alertStatusMap["READ"] || 0,
+      pendingWhatsAppAlerts: alertStatusMap["PENDING"] || 0,
+      failedWhatsAppAlerts: alertStatusMap["FAILED"] || 0,
+    },
+    charts: {
+      riskDistribution,
+      roleDistribution,
+      attendanceDistribution: bucketAttendance(allStudents),
+      departmentBreakdown,
+      actionStatusDistribution: actionStats.map(a => ({ status: a.status, count: a._count.status })),
+      issueCategoryDistribution: issueByCategory.map(i => ({ category: i.category, count: i._count.category })),
+      feeStatusDistribution: {
+        PAID: feePaidCount,
+        PENDING: feePendingCount,
+        OVERDUE: feeOverdueCount,
+      },
+    },
+    priorityStudents,
+    recentAuditLogs: recentAuditLogs.map(log => ({
+      id: log.id,
+      action: log.action,
+      entity: log.entity,
+      entityId: log.entityId,
+      actor: log.user?.email || "System",
+      role: log.user?.role || "SYSTEM",
+      createdAt: log.createdAt,
+      metadata: log.metadata,
+      ipAddress: log.ipAddress,
+    })),
+  };
+}
+
+export async function getHodDashboard(user: JwtPayload, filters: { departmentId?: string; year?: string; section?: string; mentorId?: string }) {
+  if (user.role !== "HOD" && user.role !== "ADMIN") throw ApiError.forbidden();
+
+  let targetDepartmentId = filters.departmentId;
+  if (user.role === "HOD") {
+    const hod = await prisma.mentor.findUnique({ where: { userId: user.userId } });
+    if (!hod) throw ApiError.forbidden("No HOD profile found");
+    targetDepartmentId = hod.departmentId;
+  } else if (!targetDepartmentId || targetDepartmentId.toUpperCase() === "ALL") {
+    const firstDept = await prisma.department.findFirst();
+    targetDepartmentId = firstDept?.id;
+  }
+
+  const where: Record<string, unknown> = {};
+  if (targetDepartmentId) {
+    where.departmentId = targetDepartmentId;
+  }
 
   if (filters.year && filters.year.toUpperCase() !== "ALL") {
     where.year = filters.year;
@@ -80,7 +272,7 @@ export async function getHodDashboard(user: JwtPayload, filters: { departmentId?
   if (filters.section && filters.section.toUpperCase() !== "ALL") {
     where.section = filters.section;
   }
-  if (filters.mentorId && filters.mentorId.toUpperCase() !== "ALL" && uuidRegex.test(filters.mentorId)) {
+  if (filters.mentorId && filters.mentorId.toUpperCase() !== "ALL") {
     where.mentorId = filters.mentorId;
   }
 
@@ -91,12 +283,12 @@ export async function getHodDashboard(user: JwtPayload, filters: { departmentId?
   const [totalMentors, meetingsCompleted, pendingFollowUps, mentorMeetingCounts, issueByCategory, actionStats, feeRecords] =
     await Promise.all([
       prisma.mentor.count({
-        where: {
+        where: targetDepartmentId ? {
           OR: [
-            { departmentId: hod.departmentId },
-            { students: { some: { departmentId: hod.departmentId } } }
+            { departmentId: targetDepartmentId },
+            { students: { some: { departmentId: targetDepartmentId } } }
           ]
-        }
+        } : {}
       }),
       prisma.meeting.count({ where: { studentId: { in: studentIds } } }),
       prisma.meeting.count({ where: { studentId: { in: studentIds }, nextFollowUpDate: { gte: new Date() } } }),

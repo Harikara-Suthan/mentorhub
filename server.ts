@@ -9,33 +9,35 @@ const PORT = 3000;
 
 async function startServer() {
   try {
-    await seedDatabase();
-  } catch (err) {
-    console.warn("Database initialization notice:", err);
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true, host: "0.0.0.0", port: PORT },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Mentor Assistant AI listening on port ${PORT} [http://0.0.0.0:${PORT}]`);
-    try {
-      startScheduledJobs();
-    } catch (err) {
-      console.warn("Scheduler start notice:", err);
+    if (process.env.NODE_ENV !== "production") {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), "dist");
+      app.use(express.static(distPath));
+      app.get("*", (req, res) => {
+        res.sendFile(path.join(distPath, "index.html"));
+      });
     }
-  });
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Mentor Assistant AI listening on port ${PORT} [http://0.0.0.0:${PORT}]`);
+      
+      // Run database seed & scheduled jobs asynchronously after server is listening
+      seedDatabase()
+        .then(() => {
+          startScheduledJobs();
+        })
+        .catch((err) => {
+          console.warn("Background seed/job initialization notice:", err);
+        });
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+  }
 }
 
 startServer();

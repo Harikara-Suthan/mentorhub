@@ -1,6 +1,13 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { api } from "../api/client";
 import { AuthUser } from "../types";
+import {
+  safeGetItem,
+  safeSetItem,
+  safeRemoveItem,
+  safeGetJSON,
+  safeSetJSON,
+} from "../utils/storage";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -15,27 +22,21 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => {
-    try {
-      const raw = localStorage.getItem("maa_user");
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      localStorage.removeItem("maa_user");
-      return null;
-    }
+    return safeGetJSON<AuthUser>("maa_user", null);
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const refreshUser = async () => {
     try {
-      const token = localStorage.getItem("maa_token");
+      const token = safeGetItem("maa_token");
       if (!token) return;
       const res = await api.get("/auth/me");
       if (res.data?.data) {
         setUser(res.data.data);
-        localStorage.setItem("maa_user", JSON.stringify(res.data.data));
+        safeSetJSON("maa_user", res.data.data);
       }
     } catch {
-      // ignore
+      // Keep existing cached user on background refresh failure
     }
   };
 
@@ -43,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser((prev) => {
       if (!prev) return null;
       const updated = { ...prev, ...partial };
-      localStorage.setItem("maa_user", JSON.stringify(updated));
+      safeSetJSON("maa_user", updated);
       return updated;
     });
   };
@@ -60,36 +61,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("maa_token");
+    const token = safeGetItem("maa_token");
     if (!token) {
       setLoading(false);
       return;
     }
+
+    let isMounted = true;
+
+    // Fail-safe watchdog: Guarantee loading finishes in max 2.5s even if network stalls
+    const watchdogTimer = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 2500);
+
     api
       .get("/auth/me")
       .then((res) => {
-        setUser(res.data.data);
-        localStorage.setItem("maa_user", JSON.stringify(res.data.data));
+        if (!isMounted) return;
+        if (res.data?.data) {
+          setUser(res.data.data);
+          safeSetJSON("maa_user", res.data.data);
+        }
       })
-      .catch(() => {
-        localStorage.removeItem("maa_token");
-        localStorage.removeItem("maa_user");
-        setUser(null);
+      .catch((err) => {
+        if (!isMounted) return;
+        // If 401 unauthorized, clear invalid credentials
+        if (err?.response?.status === 401) {
+          safeRemoveItem("maa_token");
+          safeRemoveItem("maa_user");
+          setUser(null);
+        }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        clearTimeout(watchdogTimer);
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+      clearTimeout(watchdogTimer);
+    };
   }, []);
 
   async function login(email: string, password: string) {
     const res = await api.post("/auth/login", { email, password });
     const { token, user } = res.data.data;
-    localStorage.setItem("maa_token", token);
-    localStorage.setItem("maa_user", JSON.stringify(user));
+    safeSetItem("maa_token", token);
+    safeSetJSON("maa_user", user);
     setUser(user);
   }
 
   function logout() {
-    localStorage.removeItem("maa_token");
-    localStorage.removeItem("maa_user");
+    safeRemoveItem("maa_token");
+    safeRemoveItem("maa_user");
     setUser(null);
   }
 

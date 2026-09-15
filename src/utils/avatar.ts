@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { safeGetItem, safeSetItem } from "./storage";
 
 // Application's clean neutral fallback avatar (user silhouette on neutral background)
 export const NEUTRAL_AVATAR =
@@ -17,9 +18,9 @@ export function getUserAvatar(email?: string | null, role?: string | null, expli
     return explicitAvatarUrl;
   }
 
-  // 2. Check custom uploaded avatar in localStorage for specific user
+  // 2. Check custom uploaded avatar in safe storage for specific user
   if (email) {
-    const saved = localStorage.getItem(`maa_avatar_${email.toLowerCase().trim()}`);
+    const saved = safeGetItem(`maa_avatar_${email.toLowerCase().trim()}`);
     if (saved && saved.trim().length > 0 && !saved.includes("unsplash.com")) return saved;
   }
 
@@ -29,13 +30,15 @@ export function getUserAvatar(email?: string | null, role?: string | null, expli
 
 export function setUserAvatar(email: string, avatarDataUrl: string): void {
   const key = `maa_avatar_${email.toLowerCase().trim()}`;
-  localStorage.setItem(key, avatarDataUrl);
-  localStorage.setItem("maa_user_avatar", avatarDataUrl);
-  window.dispatchEvent(
-    new CustomEvent("maa_avatar_changed", {
-      detail: { email, avatarUrl: avatarDataUrl },
-    })
-  );
+  safeSetItem(key, avatarDataUrl);
+  safeSetItem("maa_user_avatar", avatarDataUrl);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("maa_avatar_changed", {
+        detail: { email, avatarUrl: avatarDataUrl },
+      })
+    );
+  }
 }
 
 export function useUserAvatar(email?: string | null, role?: string | null) {

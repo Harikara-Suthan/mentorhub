@@ -1,4 +1,11 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import {
+  safeGetItem,
+  safeSetItem,
+  safeRemoveItem,
+  safeGetJSON,
+  safeSetJSON,
+} from "../utils/storage";
 
 export const api = axios.create({
   baseURL: "/api",
@@ -15,18 +22,20 @@ interface CacheEntry {
 }
 
 function getCacheKey(config: InternalAxiosRequestConfig): string {
-  const paramsKey = config.params ? JSON.stringify(config.params) : "";
-  return `${CACHE_PREFIX}${config.method?.toUpperCase()}:${config.url}:${paramsKey}`;
+  try {
+    const paramsKey = config.params ? JSON.stringify(config.params) : "";
+    return `${CACHE_PREFIX}${config.method?.toUpperCase()}:${config.url}:${paramsKey}`;
+  } catch {
+    return `${CACHE_PREFIX}${config.method?.toUpperCase()}:${config.url || ""}`;
+  }
 }
 
 export function getCachedResponse(url: string, params?: any): any | null {
   try {
     const paramsKey = params ? JSON.stringify(params) : "";
     const key = `${CACHE_PREFIX}GET:${url}:${paramsKey}`;
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const entry: CacheEntry = JSON.parse(raw);
-    return entry.data;
+    const entry = safeGetJSON<CacheEntry>(key, null);
+    return entry?.data ?? null;
   } catch {
     return null;
   }
@@ -41,23 +50,16 @@ function saveToCache(config: InternalAxiosRequestConfig, data: any) {
       timestamp: Date.now(),
       url: config.url,
     };
-    localStorage.setItem(key, JSON.stringify(entry));
-  } catch (err) {
-    // If storage is full, prune older cache entries
-    try {
-      const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_PREFIX));
-      if (keys.length > MAX_CACHE_ENTRIES / 2) {
-        keys.slice(0, 20).forEach((k) => localStorage.removeItem(k));
-      }
-    } catch {}
+    safeSetJSON(key, entry);
+  } catch {
+    // If storage is constrained, safe storage handles it
   }
 }
 
 function invalidateRelatedCache(url?: string) {
-  if (!url) return;
+  if (!url || typeof window === "undefined" || !window.localStorage) return;
   try {
-    const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_PREFIX));
-    // If a meeting, student, task, issue, or notification changes, purge related cached list queries
+    const keys = Object.keys(window.localStorage).filter((k) => k.startsWith(CACHE_PREFIX));
     keys.forEach((k) => {
       if (
         (url.includes("meeting") && k.includes("meeting")) ||
@@ -67,21 +69,20 @@ function invalidateRelatedCache(url?: string) {
         (url.includes("notification") && k.includes("notification")) ||
         (url.includes("profile") && (k.includes("profile") || k.includes("auth/me")))
       ) {
-        localStorage.removeItem(k);
+        safeRemoveItem(k);
       }
     });
   } catch {}
 }
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("maa_token");
+  const token = safeGetItem("maa_token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
 
   // If browser is actively offline and it's a GET request, check cache before network
   if (typeof navigator !== "undefined" && !navigator.onLine && config.method?.toLowerCase() === "get") {
     const cachedData = getCachedResponse(config.url || "", config.params);
     if (cachedData !== null) {
-      // Attach cached data directly to config adapter or handle via fallback
       (config as any).__offlineCachedData = cachedData;
     }
   }
@@ -107,9 +108,13 @@ api.interceptors.response.use(
 
     // Handle 401 Unauthorized
     if (error?.response?.status === 401) {
-      localStorage.removeItem("maa_token");
-      localStorage.removeItem("maa_user");
-      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+      safeRemoveItem("maa_token");
+      safeRemoveItem("maa_user");
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.startsWith("/login") &&
+        !window.location.pathname.startsWith("/welcome")
+      ) {
         window.location.href = "/login";
       }
       return Promise.reject(error);
@@ -125,7 +130,6 @@ api.interceptors.response.use(
     if (config && config.method?.toLowerCase() === "get" && isNetworkError) {
       const cached = (config as any).__offlineCachedData || getCachedResponse(config.url || "", config.params);
       if (cached !== null) {
-        // Return synthetic response from offline cache
         const syntheticResponse: AxiosResponse = {
           data: cached,
           status: 200,
@@ -135,11 +139,13 @@ api.interceptors.response.use(
         };
         (syntheticResponse as any).isOfflineCached = true;
 
-        window.dispatchEvent(
-          new CustomEvent("mentorhub:offline-fallback", {
-            detail: { url: config.url, timestamp: Date.now() },
-          })
-        );
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("mentorhub:offline-fallback", {
+              detail: { url: config.url, timestamp: Date.now() },
+            })
+          );
+        }
 
         return Promise.resolve(syntheticResponse);
       }

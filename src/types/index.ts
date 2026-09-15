@@ -165,3 +165,75 @@ export interface AppNotification {
   createdAt: string;
   entityId?: string | null;
 }
+
+export interface WhatsAppNotificationRecord {
+  id: string;
+  eventType: "ATTENDANCE_RISK" | "FEE_DUE" | "FEE_OVERDUE" | "FACULTY_MEETING_REMINDER" | "ARREAR_WARNING" | "ACTION_ITEM_OVERDUE" | "MANUAL_ALERT";
+  recipientType: "STUDENT" | "PARENT" | "FACULTY" | "ADMIN";
+  recipientName: string;
+  recipientPhone: string;
+  templateName: string;
+  templateVariables: Record<string, any>;
+  messageBody: string;
+  status: "NOT_CONFIGURED" | "PENDING" | "PROCESSING" | "SENT" | "DELIVERED" | "READ" | "FAILED" | "RECIPIENT_UNAVAILABLE" | "RECIPIENT_OPTED_OUT";
+  providerMessageId?: string | null;
+  failureReason?: string | null;
+  sentAt?: string | null;
+  deliveredAt?: string | null;
+  readAt?: string | null;
+  attemptCount: number;
+  maxAttempts: number;
+  createdAt: string;
+}
+
+export interface WhatsAppConfigStatus {
+  isConfigured: boolean;
+  status: "CONFIGURED" | "NOT CONFIGURED";
+  statusLabel: string;
+  message: string;
+  phoneNumberId: string | null;
+  wabaId: string | null;
+  apiVersion: string;
+  hasAccessToken: boolean;
+  missingFields: string[];
+}
+
+export interface WhatsAppRuleConfig {
+  id: string;
+  attendanceRiskThreshold: number;
+  feeDueAlertDaysBefore: number;
+  meetingReminderHoursBefore: number;
+  enableAttendanceAlerts: boolean;
+  enableFeeAlerts: boolean;
+  enableMeetingReminders: boolean;
+  enableArrearAlerts: boolean;
+  enableOverdueActionAlerts: boolean;
+  dedupCooldownHours: number;
+  quietHoursStart: string;
+  quietHoursEnd: string;
+}
+
+export interface WhatsAppStatusResponse {
+  success: boolean;
+  integrationStatus: "CONFIGURED" | "NOT CONFIGURED";
+  config: WhatsAppConfigStatus;
+  templatesCount: number;
+  templates: Array<{
+    name: string;
+    category: string;
+    description: string;
+    variables: string[];
+  }>;
+  ruleConfig: WhatsAppRuleConfig;
+  metrics: {
+    total: number;
+    sent: number;
+    delivered: number;
+    read: number;
+    failed: number;
+    recipientUnavailable: number;
+    pending: number;
+    unconfigured?: number;
+    successRate: number;
+  };
+}

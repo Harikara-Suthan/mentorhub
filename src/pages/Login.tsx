@@ -12,6 +12,7 @@ import { api, apiErrorMessage } from "../api/client";
 import { MentorHubLogo } from "../components/ui/MentorHubLogo";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../lib/firebase";
+import { safeSetItem, safeSetJSON } from "../utils/storage";
 
 export default function Login() {
   const { login } = useAuth();
@@ -28,8 +29,8 @@ export default function Login() {
       if (event.data?.type === "OAUTH_AUTH_SUCCESS") {
         const { token, user } = event.data;
         if (token && user) {
-          localStorage.setItem("maa_token", token);
-          localStorage.setItem("maa_user", JSON.stringify(user));
+          safeSetItem("maa_token", token);
+          safeSetJSON("maa_user", user);
           window.location.href = "/dashboard";
         }
       }
@@ -101,8 +102,8 @@ export default function Login() {
 
       const { token, user } = resData.data;
       if (token && user) {
-        localStorage.setItem("maa_token", token);
-        localStorage.setItem("maa_user", JSON.stringify(user));
+        safeSetItem("maa_token", token);
+        safeSetJSON("maa_user", user);
         // Redirecting directly to sync authentication session
         window.location.href = "/dashboard";
       }

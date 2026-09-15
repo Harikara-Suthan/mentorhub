@@ -471,3 +471,69 @@ model StudentFee {
   @@index([status])
 }
 
+model WhatsAppNotification {
+  id                String    @id @default(cuid())
+  eventType         String    // ATTENDANCE_RISK | FEE_DUE | FEE_OVERDUE | FACULTY_MEETING_REMINDER | ARREAR_WARNING | ACTION_ITEM_OVERDUE | PLACEMENT_REMINDER | MANUAL_ALERT
+  sourceRecordId    String?
+  sourceTable       String?
+  recipientType     String    // STUDENT | PARENT | FACULTY | HOD | ADMIN
+  recipientName     String
+  recipientPhone    String
+  studentId         String?
+  departmentId      String?
+  mentorId          String?
+  templateName      String
+  templateVariables Json?
+  messageBody       String
+  status            String    @default("PENDING") // PENDING | PROCESSING | SENT | DELIVERED | READ | FAILED | CANCELLED | RECIPIENT_UNAVAILABLE
+  providerMessageId String?
+  failureReason     String?
+  attemptCount      Int       @default(0)
+  maxAttempts       Int       @default(3)
+  nextRetryAt       DateTime?
+  dedupKey          String?
+  scheduledAt       DateTime  @default(now())
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  readAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([status])
+  @@index([eventType])
+  @@index([dedupKey])
+  @@index([studentId])
+  @@index([departmentId])
+  @@index([createdAt])
+}
+
+model WhatsAppOptIn {
+  id            String    @id @default(cuid())
+  phone         String    @unique
+  recipientType String
+  recipientName String?
+  optedIn       Boolean   @default(true)
+  optedInAt     DateTime  @default(now())
+  optedOutAt    DateTime?
+  consentSource String    @default("INSTITUTIONAL_ADMISSION_RECORDS")
+  createdAt     DateTime  @default(now())
+}
+
+model WhatsAppRuleConfig {
+  id                         String   @id @default("GLOBAL")
+  departmentId               String?
+  attendanceRiskThreshold    Float    @default(75.0)
+  feeDueAlertDaysBefore      Int      @default(7)
+  meetingReminderHoursBefore Int      @default(24)
+  enableAttendanceAlerts     Boolean  @default(true)
+  enableFeeAlerts            Boolean  @default(true)
+  enableMeetingReminders     Boolean  @default(true)
+  enableArrearAlerts         Boolean  @default(true)
+  enableOverdueActionAlerts  Boolean  @default(true)
+  dedupCooldownHours         Int      @default(168)
+  quietHoursStart            String?  @default("21:00")
+  quietHoursEnd              String?  @default("08:00")
+  updatedAt                  DateTime @updatedAt
+}
+
+

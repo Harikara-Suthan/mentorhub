@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import * as dashboardService from "../services/dashboardService";
 
+export const adminDashboard = asyncHandler(async (req: Request, res: Response) => {
+  const data = await dashboardService.getAdminDashboard(req.user!);
+  res.json({ success: true, data });
+});
+
 export const mentorDashboard = asyncHandler(async (req: Request, res: Response) => {
   const data = await dashboardService.getMentorDashboard(req.user!);
   res.json({ success: true, data });

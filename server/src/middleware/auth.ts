@@ -28,6 +28,10 @@ export function authenticate(req: Request, _res: Response, next: NextFunction) {
 export function authorize(...roles: Role[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) return next(ApiError.unauthorized());
+    // ADMIN is the highest application role and has access to all standard modules
+    if (req.user.role === Role.ADMIN) {
+      return next();
+    }
     if (!roles.includes(req.user.role)) {
       return next(ApiError.forbidden("Your role does not allow this action."));
     }

@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
+import crypto from "crypto";
 import { prisma } from "../config/prisma";
 import { authenticate, authorize } from "../middleware/auth";
 import { ApiError } from "../utils/ApiError";
@@ -7,8 +8,24 @@ import { evaluateAllRules, getWhatsAppRuleConfig } from "../whatsapp/ruleEngine"
 import { processWhatsAppQueue } from "../whatsapp/worker";
 import { WHATSAPP_TEMPLATES } from "../whatsapp/templates";
 import { sanitizeAndValidatePhone } from "../whatsapp/phoneUtils";
+import { env } from "../config/env";
 
 const router = Router();
+
+/**
+ * Safe constant-time token comparison to prevent timing side-channel attacks
+ */
+function safeTokenCompare(provided: string, expected: string): boolean {
+  if (typeof provided !== "string" || typeof expected !== "string") {
+    return false;
+  }
+  const bufA = Buffer.from(provided);
+  const bufB = Buffer.from(expected);
+  if (bufA.length !== bufB.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 // ============================================================================
 // Public Webhooks for Meta WhatsApp Cloud API
@@ -16,30 +33,43 @@ const router = Router();
 
 /**
  * Meta Webhook Verification Challenge
+ * Supports both /webhook and /webhook/
  */
-router.get("/webhook", (req: Request, res: Response) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
+router.get(["/webhook", "/webhook/"], (req: Request, res: Response) => {
+  const mode = req.query["hub.mode"] as string | undefined;
+  const token = req.query["hub.verify_token"] as string | undefined;
+  const challenge = req.query["hub.challenge"] as string | undefined;
 
-  const verifyToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || "mentorhub_whatsapp_verify_token";
+  const configuredToken = env.whatsappWebhookVerifyToken;
 
-  if (mode && token) {
-    if (mode === "subscribe" && token === verifyToken) {
-      console.log("[WhatsApp Webhook] Verification successful");
-      return res.status(200).send(challenge);
-    }
-    return res.sendStatus(403);
+  // 1. Validate presence of required parameters
+  if (!mode || !token || challenge === undefined) {
+    return res.status(400).type("text/plain").send("Missing required hub parameters.");
   }
-  return res.sendStatus(400);
+
+  // 2. Validate mode is subscribe and verify token matches configured token
+  if (mode === "subscribe" && safeTokenCompare(token, configuredToken)) {
+    console.log("[WhatsApp Webhook] Verification successful. Returning challenge to Meta.");
+    // Return exact challenge as plain text with HTTP 200 (mandatory for Meta validation)
+    return res.status(200).type("text/plain").send(String(challenge));
+  }
+
+  // 3. Reject invalid mode or mismatched token with HTTP 403
+  console.warn("[WhatsApp Webhook] Verification failed: token mismatch or invalid mode.");
+  return res.sendStatus(403);
 });
 
 /**
- * Meta Webhook Status Event Receiver (DELIVERED, READ, FAILED)
+ * Meta Webhook Event Receiver (Statuses: SENT, DELIVERED, READ, FAILED & Inbound Messages)
+ * Supports both /webhook and /webhook/
  */
-router.post("/webhook", async (req: Request, res: Response) => {
+router.post(["/webhook", "/webhook/"], async (req: Request, res: Response) => {
   try {
     const body = req.body;
+
+    if (!body || typeof body !== "object") {
+      return res.status(400).json({ error: "Invalid payload body" });
+    }
 
     if (body.object === "whatsapp_business_account") {
       const entries = body.entry || [];
@@ -48,7 +78,10 @@ router.post("/webhook", async (req: Request, res: Response) => {
         const changes = entry.changes || [];
         for (const change of changes) {
           const value = change.value;
-          if (value && value.statuses) {
+          if (!value) continue;
+
+          // Process status updates (sent, delivered, read, failed)
+          if (Array.isArray(value.statuses)) {
             for (const statusObj of value.statuses) {
               const messageId = statusObj.id;
               const status = statusObj.status; // sent | delivered | read | failed
@@ -64,10 +97,12 @@ router.post("/webhook", async (req: Request, res: Response) => {
               } else if (status === "failed") {
                 updateData.status = "FAILED";
                 const errorInfo = statusObj.errors?.[0];
-                updateData.failureReason = errorInfo ? `Meta Delivery Failure [${errorInfo.code}]: ${errorInfo.title || errorInfo.message}` : "WhatsApp delivery failed";
+                updateData.failureReason = errorInfo
+                  ? `Meta Delivery Failure [${errorInfo.code}]: ${errorInfo.title || errorInfo.message}`
+                  : "WhatsApp delivery failed";
               }
 
-              if (Object.keys(updateData).length > 0) {
+              if (Object.keys(updateData).length > 0 && messageId) {
                 await prisma.whatsAppNotification.updateMany({
                   where: { providerMessageId: messageId },
                   data: updateData,
@@ -75,15 +110,24 @@ router.post("/webhook", async (req: Request, res: Response) => {
               }
             }
           }
+
+          // Process inbound messages safely without throwing or dropping
+          if (Array.isArray(value.messages)) {
+            for (const msg of value.messages) {
+              console.log(`[WhatsApp Webhook] Received inbound message from sender (+${msg.from}), type: ${msg.type}`);
+            }
+          }
         }
       }
 
+      // Fast HTTP 200 response required by Meta within 5 seconds
       return res.status(200).json({ status: "EVENT_RECEIVED" });
     }
 
-    return res.sendStatus(404);
+    // Acknowledge gracefully for non-WABA objects
+    return res.status(200).json({ status: "IGNORED_NON_WABA_OBJECT" });
   } catch (err) {
-    console.error("[WhatsApp Webhook Error]", err);
+    console.warn("[WhatsApp Webhook Processing Notice]", err);
     return res.status(500).json({ error: "Webhook processing error" });
   }
 });

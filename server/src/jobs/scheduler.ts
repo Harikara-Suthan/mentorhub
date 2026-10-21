@@ -119,9 +119,14 @@ export function startScheduledJobs() {
     setTimeout(async () => {
       try {
         if (!whatsAppClient.isConfigured()) return;
+        if (process.env.WHATSAPP_AUTO_DISPATCH_ENABLED === "false") {
+          console.log("[WhatsApp Engine] Automatic batch dispatch is paused (WHATSAPP_AUTO_DISPATCH_ENABLED=false). Manual test sends via /api/whatsapp/test-send are active.");
+          return;
+        }
         console.log("[WhatsApp Engine] Bootstrapping initial automatic alert condition evaluation from PostgreSQL...");
-        const summary = await evaluateAllRules();
-        console.log(`[WhatsApp Engine Initial Boot] Evaluation completed: ${summary.totalGenerated} alert(s) generated, ${summary.totalSkippedDueToDedup} skipped (dedup).`);
+        const autoDispatch = process.env.WHATSAPP_AUTO_DISPATCH_ENABLED === "true";
+        const summary = await evaluateAllRules({ dispatchImmediately: autoDispatch });
+        console.log(`[WhatsApp Engine Initial Boot] Evaluation completed: ${summary.totalGenerated} alert(s) ${autoDispatch ? "dispatched" : "queued"}, ${summary.totalSkippedDueToDedup} skipped (dedup).`);
       } catch (err) {
         console.warn("[WhatsApp Engine Notice] Initial boot evaluation notice:", err);
       }

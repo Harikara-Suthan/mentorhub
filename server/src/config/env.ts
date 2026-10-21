@@ -16,5 +16,6 @@ export const env = {
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? 900000),
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX ?? 500),
   googleAllowedDomain: process.env.GOOGLE_ALLOWED_DOMAIN || "university.edu",
+  whatsappWebhookVerifyToken: process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || "mentorhub_whatsapp_verify_token",
 };
 

@@ -63,20 +63,21 @@ export async function processWhatsAppQueue(batchSize = 25): Promise<{ processed:
         });
       } else {
         failedCount++;
-        // Calculate exponential backoff: 5m, 15m, 60m
+        const isNonRetryable = sendResult.isRetryable === false;
+        const isMaxReached = isNonRetryable || nextAttempt >= notif.maxAttempts;
+
+        // Calculate exponential backoff: 5m, 15m, 60m only if retryable
         const retryDelaysMinutes = [5, 15, 60];
         const delay = retryDelaysMinutes[Math.min(nextAttempt - 1, retryDelaysMinutes.length - 1)] || 60;
-        const nextRetryAt = new Date(Date.now() + delay * 60 * 1000);
-
-        const isMaxReached = nextAttempt >= notif.maxAttempts;
+        const nextRetryAt = isMaxReached ? null : new Date(Date.now() + delay * 60 * 1000);
 
         await prisma.whatsAppNotification.update({
           where: { id: notif.id },
           data: {
-            status: isMaxReached ? "FAILED" : "PENDING",
+            status: "FAILED",
             failureReason: sendResult.failureReason || "WhatsApp API dispatch failed.",
-            attemptCount: nextAttempt,
-            nextRetryAt: isMaxReached ? null : nextRetryAt,
+            attemptCount: isMaxReached ? notif.maxAttempts : nextAttempt,
+            nextRetryAt,
           },
         });
       }

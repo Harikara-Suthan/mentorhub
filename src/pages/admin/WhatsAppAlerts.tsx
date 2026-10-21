@@ -853,8 +853,9 @@ export default function WhatsAppAlerts() {
                 <select
                   value={testTemplate}
                   onChange={(e) => setTestTemplate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500 font-medium"
                 >
+                  <option value="hello_world">⚡ Meta Pre-Approved Test (hello_world - Sandbox Default)</option>
                   <option value="attendance_risk">Attendance Risk Alert</option>
                   <option value="fee_due">Fee Due Notice</option>
                   <option value="fee_overdue">Fee Overdue Notice</option>

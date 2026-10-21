@@ -47,6 +47,9 @@ export interface WhatsAppSendResult {
   status: WhatsAppDeliveryStatus;
   failureReason?: string;
   isSimulated?: boolean;
+  errorCode?: number;
+  errorType?: string;
+  isRetryable?: boolean;
 }
 
 export interface WhatsAppCloudApiConfig {

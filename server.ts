@@ -4,6 +4,7 @@ import { createServer as createViteServer } from "vite";
 import app from "./server/src/app";
 import { startScheduledJobs } from "./server/src/jobs/scheduler";
 import { seedDatabase } from "./server/src/db/seed";
+import { syncAdminAccountPassword } from "./server/src/db/syncAdminPassword";
 
 const PORT = 3000;
 
@@ -28,6 +29,7 @@ async function startServer() {
       
       // Run database seed & scheduled jobs asynchronously after server is listening
       seedDatabase()
+        .then(() => syncAdminAccountPassword())
         .then(() => {
           startScheduledJobs();
         })

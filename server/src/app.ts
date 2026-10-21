@@ -44,6 +44,7 @@ const limiter = rateLimit({
     trustProxy: false,
     xForwardedForHeader: false,
   },
+  skip: (req) => req.originalUrl.includes("/whatsapp/webhook"),
 });
 app.use("/api", limiter as any);
 
@@ -71,6 +72,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
+app.use("/whatsapp", whatsappRoutes);
 app.use("/api/admin", adminRoutes);
 
 // Catch unhandled API routes

@@ -11,6 +11,16 @@ export interface WhatsAppTemplateDefinition {
 }
 
 export const WHATSAPP_TEMPLATES: Record<string, WhatsAppTemplateDefinition> = {
+  hello_world: {
+    name: "hello_world",
+    category: "UTILITY",
+    language: "en_US",
+    eventType: "MANUAL_ALERT",
+    description: "Meta pre-approved default sandbox template for connectivity and credential verification.",
+    variables: [],
+    renderText: () => "Hello World! This is an official Meta test notification from MentorHUB.",
+  },
+
   attendance_risk: {
     name: "attendance_risk",
     category: "UTILITY",
@@ -157,16 +167,21 @@ export function buildMetaTemplatePayload(
     text: String(vars[varName] ?? ""),
   }));
 
-  return {
+  const payload: any = {
     name: templateName,
     language: {
       code: languageCode,
     },
-    components: [
+  };
+
+  if (parameters.length > 0) {
+    payload.components = [
       {
         type: "body",
         parameters,
       },
-    ],
-  };
+    ];
+  }
+
+  return payload;
 }

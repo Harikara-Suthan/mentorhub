@@ -161,7 +161,7 @@ export async function createAndDispatchNotification(
     providerMessageId = sendResult.providerMessageId;
     failureReason = sendResult.failureReason;
     sentAt = sendResult.success ? new Date() : null;
-    attemptCount = 1;
+    attemptCount = sendResult.isRetryable === false ? 3 : 1;
   }
 
   // 5. Create Notification Record in PostgreSQL (single atomic insert)
